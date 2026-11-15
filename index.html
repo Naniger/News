@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>news</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='8' fill='%235c3a1e'/%3E%3Crect x='8' y='8' width='48' height='48' rx='4' fill='%237c4a24'/%3E%3Crect x='14' y='18' width='36' height='36' rx='2' fill='%23f5e6d3' transform='rotate(-4 32 36)'/%3E%3Cpath d='M20 28h24M20 35h24M20 42h16' stroke='%23a1866f' stroke-width='3' stroke-linecap='round' transform='rotate(-4 32 36)'/%3E%3Ccircle cx='32' cy='14' r='4' fill='%23b91c1c'/%3E%3Ccircle cx='31' cy='13' r='1.5' fill='%23fca5a5'/%3E%3C/svg%3E">
+  <title>News</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='8' fill='%235c3a1e'/%3E%3Crect x='8' y='8' width='48' height='48' rx='4' fill='%237c4a24'/%3E%3Cpath d='M16 20h32v4H16zM16 30h32v3H16zM16 38h24v3H16z' fill='%23f5e6d3'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* ===== 野獣先輩風・茶色テーマ ===== */
+    /* ===== 野獣先輩風・茶色テーマ（News） ===== */
     :root {
       --brown-950: #2b1a0e;
       --brown-900: #3b2412;
@@ -33,7 +33,6 @@
     }
     h1, h2, h3 { letter-spacing: 0.04em; }
 
-    /* 見出しの「野獣」風 */
     header h1 {
       color: var(--brown-900) !important;
       text-shadow: 2px 2px 0 var(--brown-300), 4px 4px 0 rgba(0,0,0,0.08);
@@ -256,13 +255,6 @@
     #unpublishedOverlay .unp-go-btn:hover { background: var(--brown-950); }
     #unpublishedOverlay .unp-go-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--brown-950); }
     #unpublishedOverlay .unp-footer { margin-top: 24px; font-size: 11px; color: var(--brown-700); font-family: monospace; letter-spacing: 0.05em; }
-    #unpublishedOverlay .unp-image { margin: 16px auto 8px; display: flex; align-items: center; justify-content: center; }
-    #unpublishedOverlay .unp-image img { max-width: min(280px, 70vw); max-height: 220px; width: auto; height: auto; object-fit: contain; border-radius: 12px; border: 3px solid var(--brown-900); box-shadow: 0 6px 18px rgba(59,36,18,0.4), 0 0 0 3px rgba(255,255,255,0.6) inset; background: #fff; padding: 4px; }
-
-    /* ===== 左上固定画像 ===== */
-    #cornerImage { position: fixed; top: 12px; left: 12px; z-index: 99990; pointer-events: none; display: block; }
-    #cornerImage img { width: 120px; height: 120px; object-fit: contain; display: block; filter: drop-shadow(0 3px 8px rgba(43,26,14,0.5)); border-radius: 10px; background: transparent; }
-    @media (max-width: 640px) { #cornerImage img { width: 80px; height: 80px; } }
 
     #siteRules { transition: box-shadow 0.2s; }
     #siteRules.collapsed #rulesContent { display: none; }
@@ -306,7 +298,7 @@
     .unread-only-wrap input { cursor: pointer; }
     .thread-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--brown-300); padding-bottom: 6px; margin-bottom: 12px; }
 
-    /* ===== Tailwind クラスの上書き（茶色化） ===== */
+    /* ===== Tailwind クラスの茶色化 ===== */
     .bg-amber-50 { background-color: var(--brown-100) !important; }
     .border-amber-200 { border-color: var(--brown-300) !important; }
     .text-red-900 { color: var(--brown-900) !important; }
@@ -335,13 +327,6 @@
 </head>
 <body class="p-4 max-w-4xl mx-auto">
 
-  <!-- 左上固定画像 -->
-  <div id="cornerImage">
-    <img src="https://lh3.googleusercontent.com/d/1AYPB48tOtoLlq-1gfUgpGmE1HTPonDYz"
-         alt="corner image"
-         referrerpolicy="no-referrer">
-  </div>
-
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
     <div class="boot-msg">アカウントを確認しています...</div>
@@ -364,12 +349,9 @@
     <div class="unp-bar">SECURE FRAME / SITE PAUSED</div>
     <div class="unp-center">
       <div class="unp-msg">メンテナンス中...</div>
-      <div class="unp-image">
-        <img src="https://lh3.googleusercontent.com/d/1AYPB48tOtoLlq-1gfUgpGmE1HTPonDYz" alt="maintenance image" referrerpolicy="no-referrer">
-      </div>
       <div class="unp-sub" id="unpublishedSub">現在メンテナンス中です。<br>もうしばらくお待ちください。</div>
       <div class="unp-action"><button class="unp-go-btn" id="unpGoBtn">了解</button></div>
-      <div class="unp-footer">© 掲示板 / overlay mode</div>
+      <div class="unp-footer">© News / overlay mode</div>
     </div>
   </div>
 
@@ -381,7 +363,7 @@
     </button>
     <div id="rulesContent" class="px-4 py-4 text-sm leading-relaxed" style="color: var(--brown-950);">
       <ol class="list-decimal list-inside space-y-2">
-        <li><strong style="color: var(--brown-900);">Googleログイン必須</strong><br>当サイトのご利用にはGoogleアカウントでのログインが必要です。投稿は匿名で表示されます。</li>
+        <li><strong style="color: var(--brown-900);">Googleログイン必須</strong><br>当ニュースサイトのご利用にはGoogleアカウントでのログインが必要です。投稿は匿名で表示されます。</li>
         <li><strong style="color: var(--brown-900);">初回ログインは承認制</strong><br>初めて当サイトを利用する場合、管理者または主による承認が必要です。承認されるまでサイトをご利用いただけません。不正利用防止のためです。</li>
         <li><strong style="color: var(--brown-900);">禁止事項</strong>
           <ul class="list-disc list-inside ml-4 mt-1 space-y-1" style="color: var(--brown-800);">
@@ -492,9 +474,7 @@
           <button id="badgeSaveBtn" class="publish-btn">保存</button>
         </div>
       </div>
-      <div class="flex justify-end mt-4">
-        <button id="badgeCloseBtn" class="reply-cancel-btn">閉じる</button>
-      </div>
+      <div class="flex justify-end mt-4"><button id="badgeCloseBtn" class="reply-cancel-btn">閉じる</button></div>
     </div>
   </div>
 
@@ -570,9 +550,9 @@
   <!-- ログイン画面 -->
   <div id="loginView" class="hidden">
     <div class="rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center" style="background: var(--brown-50); border: 2px solid var(--brown-300);">
-      <h1 class="text-3xl font-bold mb-2" style="color: var(--brown-950);">掲示板</h1>
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--brown-950);">News</h1>
+      <p class="text-sm mb-2" style="color: var(--brown-700);">ようこそ、ニュースサイトへ。</p>
       <p class="text-sm mb-6" style="color: var(--brown-700);">ご利用にはGoogleアカウントでのログインが必要です。</p>
-      <p class="text-sm mb-6" style="color: var(--brown-700);">安全のためです。</p>
       <button id="googleLoginBtn" class="font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto transition w-full" style="background: var(--brown-50); border: 1px solid var(--brown-400); color: var(--brown-900);">
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
@@ -591,7 +571,7 @@
   <div id="mainView" class="hidden">
     <header class="pb-2 mb-4 flex justify-between items-center flex-wrap gap-2" style="border-bottom: 2px solid var(--brown-800);">
       <div>
-        <h1 class="text-3xl font-bold cursor-pointer" onclick="showThreadList()" style="color: var(--brown-900);">掲示板</h1>
+        <h1 class="text-3xl font-bold cursor-pointer" onclick="showThreadList()" style="color: var(--brown-900);">News</h1>
         <p class="text-sm flex flex-wrap items-center gap-2" style="color: var(--brown-700);">
           <span id="connDot" class="inline-block w-2 h-2 rounded-full" style="background: var(--brown-500);"></span>
           <span id="connText">接続中...</span>
@@ -616,35 +596,35 @@
           <button id="publishBtn" class="publish-btn hidden" onclick="openPublishModal()">🌐 公開設定</button>
           <input type="file" id="restoreInput" accept="application/json,.json" class="hidden">
         </div>
-        <button id="boardBtn" class="board-publish-btn" onclick="showBoardView()">📋 掲示板</button>
+        <button id="boardBtn" class="board-publish-btn" onclick="showBoardView()">📋 お知らせ</button>
         <span id="userEmail" class="text-xs hidden" style="color: var(--brown-600);"></span>
         <button id="logoutBtn" onclick="doLogout()" class="text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-500); color:#fff;">ログアウト</button>
-        <button id="backToListBtn" onclick="showThreadList()" class="hidden text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← スレッド一覧に戻る</button>
+        <button id="backToListBtn" onclick="showThreadList()" class="hidden text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← 一覧に戻る</button>
       </div>
     </header>
 
     <div id="threadListView">
       <section class="p-4 rounded mb-6 shadow-sm" style="background: var(--brown-100); border: 1px solid var(--brown-300);">
-        <h2 class="text-lg font-bold mb-2" style="color: var(--brown-900);">新規スレッド作成</h2>
+        <h2 class="text-lg font-bold mb-2" style="color: var(--brown-900);">新規トピック作成</h2>
         <form id="createThreadForm" class="space-y-3">
-          <input type="text" id="threadTitle" placeholder="スレッドのタイトルを入力（必須）" maxlength="100" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;" required>
-          <textarea id="firstPostContent" rows="3" placeholder="最初の書き込み内容（任意）" maxlength="2000" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
+          <input type="text" id="threadTitle" placeholder="トピックのタイトルを入力（必須）" maxlength="100" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;" required>
+          <textarea id="firstPostContent" rows="3" placeholder="最初の内容（任意）" maxlength="2000" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
           <div>
             <label class="block text-xs mb-1" style="color: var(--brown-700);">画像を添付（自動リサイズ・最大200KB、任意）:</label>
             <input type="file" id="threadFileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
             <div class="preview-box" id="threadPreviewBox"><img id="threadPreviewImg" alt="プレビュー"><div class="preview-info" id="threadPreviewInfo"></div></div>
           </div>
-          <button type="submit" id="createThreadBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm" style="background: var(--brown-800); color:#fff;">スレッドを立てる</button>
+          <button type="submit" id="createThreadBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm" style="background: var(--brown-800); color:#fff;">トピックを作成する</button>
         </form>
       </section>
 
       <main>
         <div class="thread-list-header">
-          <h2 class="text-xl font-bold flex items-center gap-2" style="color: var(--brown-900);">スレッド一覧 <span id="unreadCountLabel" class="unread-count-badge hidden">0</span></h2>
-          <label class="unread-only-wrap" id="unreadOnlyWrap" title="まだ開いていないスレッドだけを表示します"><input type="checkbox" id="unreadOnlyCheck"><span>🆕 新着のみ表示</span></label>
+          <h2 class="text-xl font-bold flex items-center gap-2" style="color: var(--brown-900);">ニューストピック一覧 <span id="unreadCountLabel" class="unread-count-badge hidden">0</span></h2>
+          <label class="unread-only-wrap" id="unreadOnlyWrap" title="まだ開いていないトピックだけを表示します"><input type="checkbox" id="unreadOnlyCheck"><span>🆕 新着のみ表示</span></label>
         </div>
         <div id="threadsContainer" class="space-y-2 threads-scroll pr-1">
-          <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> スレッドを読み込み中...</p>
+          <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> トピックを読み込み中...</p>
         </div>
       </main>
     </div>
@@ -656,11 +636,11 @@
           <p id="currentThreadDate" class="text-xs" style="color: var(--brown-600);"></p>
           <p id="currentThreadAuthor" class="text-xs mt-1" style="color: var(--brown-600);"></p>
         </div>
-        <button id="deleteThreadBtn" class="delete-btn hidden" onclick="deleteCurrentThread()">スレッドを削除</button>
+        <button id="deleteThreadBtn" class="delete-btn hidden" onclick="deleteCurrentThread()">トピックを削除</button>
       </div>
 
       <section class="p-4 rounded mb-6 shadow-sm" style="background: var(--brown-100); border: 1px solid var(--brown-300);">
-        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">このスレッドに書き込む</h3>
+        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">このトピックにコメントする</h3>
         <form id="postForm" class="space-y-3">
           <textarea id="postContent" rows="4" placeholder="コメントを入力してください。URLは自動でリンク化されます。" maxlength="2000" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
           <div class="flex items-center justify-between flex-wrap gap-3">
@@ -669,13 +649,13 @@
               <input type="file" id="fileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
               <div class="preview-box" id="postPreviewBox"><img id="postPreviewImg" alt="プレビュー"><div class="preview-info" id="postPreviewInfo"></div></div>
             </div>
-            <button type="submit" id="submitBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm whitespace-nowrap" style="background: var(--brown-800); color:#fff;">書き込む</button>
+            <button type="submit" id="submitBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm whitespace-nowrap" style="background: var(--brown-800); color:#fff;">コメントする</button>
           </div>
         </form>
       </section>
 
       <main>
-        <h3 class="text-lg font-bold pb-1 mb-4" style="color: var(--brown-900); border-bottom: 1px solid var(--brown-300);">レス一覧</h3>
+        <h3 class="text-lg font-bold pb-1 mb-4" style="color: var(--brown-900); border-bottom: 1px solid var(--brown-300);">コメント一覧</h3>
         <div id="postsContainer" class="post-tree">
           <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> 読み込み中...</p>
         </div>
@@ -684,12 +664,12 @@
 
     <div id="boardView" class="hidden">
       <div class="flex justify-between items-center pb-2 mb-4" style="border-bottom: 1px solid var(--brown-300);">
-        <h2 class="text-xl font-bold" style="color: var(--brown-900);">📋 掲示板</h2>
-        <button onclick="showThreadList()" class="text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← スレッド一覧に戻る</button>
+        <h2 class="text-xl font-bold" style="color: var(--brown-900);">📋 お知らせ</h2>
+        <button onclick="showThreadList()" class="text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← 一覧に戻る</button>
       </div>
-      <div id="boardReadonlyNote" class="board-readonly-note hidden">📖 掲示板は閲覧のみ可能です。投稿・編集は管理者または主、および掲示板管理権限を持つユーザーのみ行えます。</div>
+      <div id="boardReadonlyNote" class="board-readonly-note hidden">📖 お知らせは閲覧のみ可能です。投稿・編集は管理者または主、および管理権限を持つユーザーのみ行えます。</div>
       <div id="boardFormWrapper" class="board-form-box">
-        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">✏️ 新しいお知らせ・イベント投稿</h3>
+        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">✏️ 新しいお知らせ投稿</h3>
         <form id="boardForm" class="space-y-3">
           <div>
             <label class="block text-xs mb-1" style="color: var(--brown-700);">タイトル（必須）:</label>
@@ -704,11 +684,11 @@
             <input type="file" id="boardFileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
             <div class="preview-box" id="boardPreviewBox"><img id="boardPreviewImg" alt="プレビュー"><div class="preview-info" id="boardPreviewInfo"></div></div>
           </div>
-          <button type="submit" id="boardSubmitBtn" class="board-publish-btn">📢 掲示板に投稿する</button>
+          <button type="submit" id="boardSubmitBtn" class="board-publish-btn">📢 お知らせを投稿する</button>
         </form>
       </div>
       <div id="boardListContainer">
-        <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> 掲示板を読み込み中...</p>
+        <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> お知らせを読み込み中...</p>
       </div>
     </div>
 
@@ -776,7 +756,6 @@
   let pendingCache = {}, approvedCache = {};
   let siteStatusCache = { published: true, messageUrl: '', lockdown: false, alarm: false, alarmReason: '', alarmBy: '' };
   let myFingerprint = null, nicknamesCache = {};
-  let badgeEditingTarget = null, badgeEditingBadgeId = null;
   let myBadgePublic = true, myEmailVisible = true;
   let intentionalSignOut = false, userApproved = false, initialAuthCheckDone = false;
   let boardCache = {}, badgeFeaturePermissions = {};
@@ -784,7 +763,6 @@
   let readThreadsCache = {}, allThreadsCache = [], unreadOnlyFilter = false;
   let bannerTimer = null;
 
-  /* 既読管理 */
   function readStorageKey(email) { return 'readThreads_' + (email || 'anonymous'); }
   function loadReadThreads(email) {
     try { const raw = localStorage.getItem(readStorageKey(email)); if (!raw) return {};
@@ -824,7 +802,6 @@
     else label.classList.add('hidden');
   }
 
-  /* DOM キャッシュ */
   const loginView = document.getElementById('loginView');
   const mainView = document.getElementById('mainView');
   const threadListView = document.getElementById('threadListView');
@@ -855,7 +832,6 @@
   const alarmToastReason = document.getElementById('alarmToastReason');
   const alarmToastIssuer = document.getElementById('alarmToastIssuer');
 
-  /* 権限 */
   function canDelete() { return userRole === 'admin' || userRole === 'owner' || userRole === 'vip'; }
   function canBackup() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canBackup'); }
   function canViewEmail() { if (!canToggleEmailVisibility()) return false; return myEmailVisible === true; }
@@ -911,7 +887,6 @@
     return null;
   }
 
-  /* ユーティリティ */
   function generateFingerprint() {
     const parts = [navigator.userAgent, navigator.language, (navigator.languages || []).join(','),
       screen.width + 'x' + screen.height, screen.colorDepth, new Date().getTimezoneOffset(),
@@ -953,7 +928,6 @@
   }
   function showBanner(msg, isError = true) {
     statusBanner.textContent = msg;
-    statusBanner.style.background = isError ? 'var(--accent-red)' : 'var(--brown-800)';
     statusBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;padding:6px;font-size:12px;transform:translateY(0);color:#fff;background:' + (isError ? 'var(--accent-red)' : 'var(--brown-800)');
     clearTimeout(bannerTimer);
     bannerTimer = setTimeout(() => { statusBanner.style.transform = 'translateY(-100%)'; }, 4000);
@@ -980,7 +954,6 @@
   function showLoginView() { loginView.classList.remove('hidden'); mainView.classList.add('hidden'); }
   function hideBootOverlay() { bootOverlay.classList.add('hidden'); }
 
-  /* オーバーレイ */
   function forceExit(msg, sub, showSwitchButton) {
     banOverlayMsg.textContent = msg || 'アクセスが拒否されました';
     banOverlaySub.innerHTML = sub || '';
@@ -1047,7 +1020,6 @@
   function hideUnpublishedOverlay() { unpublishedOverlay.classList.remove('show'); }
   unpGoBtn.addEventListener('click', () => { const url = unpGoBtn.dataset.url; if (url) { try { window.location.href = url; } catch (e) { alert('URLを開けませんでした'); } } });
 
-  /* BAN / 承認 */
   function checkSelfBan() {
     if (!currentUser) return false;
     if (isCurrentUserProtected()) return false;
@@ -1081,7 +1053,6 @@
     return false;
   }
 
-  /* 画像 */
   function fileToBase64Image(file) {
     return new Promise((resolve, reject) => {
       if (!file) { resolve(null); return; }
@@ -1128,7 +1099,6 @@
     } catch (err) { alert(err.message); fileInput.value = ''; box.classList.remove('show'); return null; }
   }
 
-  /* 利用ルール開閉 */
   (function initSiteRules() {
     const rulesEl = document.getElementById('siteRules');
     const toggleBtn = document.getElementById('rulesToggleBtn');
@@ -1151,7 +1121,6 @@
     if (e.target.tagName === 'IMG' || e.target.tagName === 'A') { e.preventDefault(); return false; }
   });
 
-  /* バッジ機能権限 */
   function initBadgeFeatureListener() {
     if (badgeFeatureUnsubscribe) badgeFeatureUnsubscribe();
     badgeFeatureUnsubscribe = onValue(ref(db, 'badgeFeatures'), (snap) => {
@@ -1228,7 +1197,6 @@
     else { btn.textContent = '🚨 手動アラート'; btn.classList.remove('active'); }
   }
 
-  /* アラート */
   window.openAlarmModal = function() {
     if (!canAlarm()) { alert('この操作は管理者または主のみ可能です。'); return; }
     if (siteStatusCache.alarm === true) {
@@ -1298,13 +1266,12 @@
     }
   };
 
-  /* 掲示板 */
   function initBoardListener() {
     if (boardUnsubscribe) boardUnsubscribe();
     boardUnsubscribe = onValue(ref(db, 'board'), (snap) => {
       boardCache = snap.exists() ? snap.val() : {};
       if (!boardView.classList.contains('hidden')) renderBoardList();
-    }, (err) => console.error('掲示板監視エラー:', err));
+    }, (err) => console.error('お知らせ監視エラー:', err));
   }
   function renderBoardList() {
     const container = document.getElementById('boardListContainer');
@@ -1333,9 +1300,9 @@
       const delBtn = card.querySelector('.board-delete-btn');
       if (delBtn) {
         delBtn.addEventListener('click', async () => {
-          if (!canManageBoard()) { alert('掲示板管理権限がありません。'); return; }
+          if (!canManageBoard()) { alert('管理権限がありません。'); return; }
           if (!confirm('この投稿を削除しますか？')) return;
-          try { await remove(ref(db, `board/${key}`)); showBanner('掲示板投稿を削除しました', false); }
+          try { await remove(ref(db, `board/${key}`)); showBanner('お知らせを削除しました', false); }
           catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
         });
       }
@@ -1357,7 +1324,7 @@
   document.getElementById('boardForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) { alert('ログインが必要です。'); return; }
-    if (!canManageBoard()) { alert('掲示板管理権限がありません。'); return; }
+    if (!canManageBoard()) { alert('管理権限がありません。'); return; }
     const title = document.getElementById('boardTitle').value.trim();
     const content = document.getElementById('boardContent').value.trim();
     const fileInput = document.getElementById('boardFileInput');
@@ -1372,18 +1339,17 @@
       await set(newRef, { title, content: content || '', file: fileData, authorEmail: currentUser.email, authorUid: currentUser.uid, createdAt: Date.now() });
       document.getElementById('boardForm').reset();
       document.getElementById('boardPreviewBox').classList.remove('show');
-      showBanner('掲示板に投稿しました', false);
+      showBanner('お知らせを投稿しました', false);
     } catch (err) {
-      console.error('掲示板投稿エラー:', err);
+      console.error('お知らせ投稿エラー:', err);
       showBanner('投稿失敗: ' + (err.code || err.message), true);
       alert('投稿に失敗しました。\n' + (err.message || ''));
-    } finally { btn.disabled = false; btn.textContent = '📢 掲示板に投稿する'; }
+    } finally { btn.disabled = false; btn.textContent = '📢 お知らせを投稿する'; }
   });
   document.getElementById('boardFileInput').addEventListener('change', () => {
     updatePreview(document.getElementById('boardFileInput'), 'boardPreviewBox', 'boardPreviewImg', 'boardPreviewInfo');
   });
 
-  /* ログイン */
   document.getElementById('switchAccountBtn').addEventListener('click', async () => {
     intentionalSignOut = true;
     try { await signOut(auth); } catch (e) {}
@@ -1420,7 +1386,6 @@
     setTimeout(() => { intentionalSignOut = false; initialAuthCheckDone = false; }, 500);
   };
 
-  /* サイトステータス */
   function initSiteStatusListener() {
     if (siteStatusUnsubscribe) siteStatusUnsubscribe();
     siteStatusUnsubscribe = onValue(ref(db, 'siteStatus'), (snap) => {
@@ -1439,7 +1404,6 @@
     }, (err) => console.error('サイト公開状態監視エラー:', err));
   }
 
-  /* カスタムバッジ・BAN・既知ユーザー */
   function initCustomBadgesListener() {
     if (badgesUnsubscribe) badgesUnsubscribe();
     badgesUnsubscribe = onValue(ref(db, 'customBadges'), (snap) => {
@@ -1489,7 +1453,6 @@
     if (btnEl) { if (cnt > 0) btnEl.classList.add('has-pending'); else btnEl.classList.remove('has-pending'); }
   }
 
-  /* ユーザー登録・承認申請 */
   async function registerMyFingerprint() {
     if (!currentUser || !myFingerprint) return;
     const now = Date.now();
@@ -1520,7 +1483,6 @@
     } catch (e) {}
   }
 
-  /* 起動フロー */
   onAuthStateChanged(auth, async (user) => {
     if (intentionalSignOut) { currentUser = null; userRole = null; return; }
     currentUser = user;
@@ -1588,7 +1550,6 @@
     await registerMyFingerprint();
   });
 
-  /* スレッド一覧 */
   function loadThreads() {
     if (threadsUnsubscribe) threadsUnsubscribe();
     threadsUnsubscribe = onValue(ref(db, 'threads'), (snap) => {
@@ -1596,8 +1557,8 @@
       allThreadsCache = Object.entries(val).map(([key, t]) => ({ key, ...t }));
       renderThreadsList(); updateUnreadCountLabel();
     }, (err) => {
-      console.error('スレッド監視エラー:', err);
-      if (threadsContainer) threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">スレッド読み込みエラー</p>';
+      console.error('トピック監視エラー:', err);
+      if (threadsContainer) threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">トピック読み込みエラー</p>';
     });
   }
   function renderThreadsList() {
@@ -1606,7 +1567,7 @@
     let list = allThreadsCache.slice();
     list.sort((a, b) => (b.lastActivityAt || b.createdAt || 0) - (a.lastActivityAt || a.createdAt || 0));
     if (unreadOnlyFilter) list = list.filter(t => isThreadUnread(t));
-    if (list.length === 0) { threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">スレッドがありません。</p>'; return; }
+    if (list.length === 0) { threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">トピックがありません。</p>'; return; }
     list.forEach((thread) => {
       const isUnread = isThreadUnread(thread);
       const unreadPosts = getUnreadPostCount(thread);
@@ -1621,7 +1582,7 @@
           </div>
           <div class="flex flex-col items-end gap-1">
             ${isUnread ? '<span class="thread-new-badge">新着' + (unreadPosts > 0 ? ' ' + unreadPosts : '') + '</span>' : ''}
-            <span class="text-xs" style="color:var(--brown-500);">${(thread.postCount || 0)} レス</span>
+            <span class="text-xs" style="color:var(--brown-500);">${(thread.postCount || 0)} コメント</span>
           </div>
         </div>`;
       item.addEventListener('click', () => openThread(thread.key));
@@ -1640,7 +1601,6 @@
     renderThreadsList();
   };
 
-  /* スレッド作成・詳細 */
   document.getElementById('createThreadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) { alert('ログインが必要です。'); return; }
@@ -1675,14 +1635,14 @@
       await update(ref(db), updates);
       document.getElementById('createThreadForm').reset();
       document.getElementById('threadPreviewBox').classList.remove('show');
-      showBanner('スレッドを作成しました', false);
+      showBanner('トピックを作成しました', false);
       markThreadAsRead(threadKey);
       openThread(threadKey);
     } catch (err) {
-      console.error('スレッド作成エラー:', err);
+      console.error('トピック作成エラー:', err);
       showBanner('作成失敗: ' + (err.code || err.message), true);
-      alert('スレッド作成に失敗しました。\n' + (err.message || ''));
-    } finally { btn.disabled = false; btn.textContent = 'スレッドを立てる'; }
+      alert('トピック作成に失敗しました。\n' + (err.message || ''));
+    } finally { btn.disabled = false; btn.textContent = 'トピックを作成する'; }
   });
   document.getElementById('threadFileInput').addEventListener('change', () => {
     updatePreview(document.getElementById('threadFileInput'), 'threadPreviewBox', 'threadPreviewImg', 'threadPreviewInfo');
@@ -1717,8 +1677,8 @@
       allPostsCache.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
       renderPostsFromCache();
     }, (err) => {
-      console.error('レス監視エラー:', err);
-      postsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">レス読み込みエラー</p>';
+      console.error('コメント監視エラー:', err);
+      postsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">コメント読み込みエラー</p>';
     });
   }
 
@@ -1729,7 +1689,7 @@
     let num = 1;
     allPostsCache.forEach(p => { postNumberMap.set(p.key, num++); });
     const rootPosts = allPostsCache.filter(p => !p.parentId);
-    if (rootPosts.length === 0) { postsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">まだレスがありません。</p>'; return; }
+    if (rootPosts.length === 0) { postsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">まだコメントがありません。</p>'; return; }
     const tree = document.createElement('div');
     tree.className = 'post-tree';
     rootPosts.forEach(p => tree.appendChild(buildPostNode(p, 0)));
@@ -1775,9 +1735,9 @@
     });
     card.querySelector('[data-del-id]')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
-      if (!confirm('このレスを削除しますか？')) return;
+      if (!confirm('このコメントを削除しますか？')) return;
       btn.disabled = true;
-      try { await remove(ref(db, `threads/${currentThreadKey}/posts/${post.key}`)); showBanner('レスを削除しました', false); }
+      try { await remove(ref(db, `threads/${currentThreadKey}/posts/${post.key}`)); showBanner('コメントを削除しました', false); }
       catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); btn.disabled = false; }
     });
     wrap.appendChild(card);
@@ -1862,20 +1822,19 @@
       document.getElementById('postPreviewBox').classList.remove('show');
       activeReplyParentId = null;
     } catch (err) {
-      console.error('投稿エラー:', err);
+      console.error('コメント投稿エラー:', err);
       showBanner('投稿失敗: ' + (err.code || err.message), true);
       alert('投稿に失敗しました。\n' + (err.message || ''));
-    } finally { btn.disabled = false; btn.textContent = '書き込む'; }
+    } finally { btn.disabled = false; btn.textContent = 'コメントする'; }
   });
 
   window.deleteCurrentThread = async function() {
     if (!currentThreadKey) return;
-    if (!confirm('このスレッドを削除しますか？（全レスも削除されます）')) return;
-    try { await remove(ref(db, `threads/${currentThreadKey}`)); showBanner('スレッドを削除しました', false); showThreadList(); }
+    if (!confirm('このトピックを削除しますか？（全コメントも削除されます）')) return;
+    try { await remove(ref(db, `threads/${currentThreadKey}`)); showBanner('トピックを削除しました', false); showThreadList(); }
     catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
   };
 
-  /* バッジ公開トグル */
   badgeToggle?.addEventListener('change', (e) => {
     myBadgePublic = e.target.checked;
     if (currentUser) saveBadgeVisibility(currentUser.email, myBadgePublic);
@@ -1886,7 +1845,6 @@
     if (currentThreadKey) renderPostsFromCache();
   });
 
-  /* 公開設定モーダル */
   function updatePublishModalUI() {
     const label = document.getElementById('publishStatusLabel');
     if (label) label.textContent = siteStatusCache.published !== false ? '公開中' : '非公開（メンテナンス中）';
@@ -1918,7 +1876,6 @@
     } catch (err) { showBanner('切替失敗: ' + (err.code || err.message), true); }
   });
 
-  /* ユーザー一覧 */
   function renderUserList() {
     const container = document.getElementById('userListContainer');
     if (!container) return;
@@ -1997,7 +1954,6 @@
     catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
   });
 
-  /* 承認待ち */
   function renderPendingList() {
     const container = document.getElementById('pendingListContainer');
     if (!container) return;
@@ -2042,7 +1998,6 @@
     document.getElementById('pendingModal').classList.add('hidden');
   });
 
-  /* BAN */
   function renderBanList() {
     const container = document.getElementById('banListContainer');
     if (!container) return;
@@ -2088,7 +2043,6 @@
     } catch (err) { showBanner('BAN失敗: ' + (err.code || err.message), true); }
   });
 
-  /* バッジ管理 */
   document.getElementById('badgeCloseBtn')?.addEventListener('click', () => {
     document.getElementById('badgeModal').classList.add('hidden');
   });
@@ -2099,7 +2053,7 @@
     document.getElementById('badgeEditor').classList.add('hidden');
   });
 
-  console.log('✅ 掲示板アプリ初期化完了（茶色テーマ・Discord Webhook削除済み）');
+  console.log('✅ News アプリ初期化完了（茶色テーマ・左上画像削除・Discord Webhook削除済み）');
 </script>
 </body>
 </html>
