@@ -4,858 +4,336 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>news</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='8' fill='%23d97706'/%3E%3Crect x='8' y='8' width='48' height='48' rx='4' fill='%23f59e0b'/%3E%3Crect x='14' y='18' width='36' height='36' rx='2' fill='%23ffffff' transform='rotate(-4 32 36)'/%3E%3Cpath d='M20 28h24M20 35h24M20 42h16' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' transform='rotate(-4 32 36)'/%3E%3Ccircle cx='32' cy='14' r='4' fill='%23ef4444'/%3E%3Ccircle cx='31' cy='13' r='1.5' fill='%23fca5a5'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='8' fill='%235c3a1e'/%3E%3Crect x='8' y='8' width='48' height='48' rx='4' fill='%237c4a24'/%3E%3Crect x='14' y='18' width='36' height='36' rx='2' fill='%23f5e6d3' transform='rotate(-4 32 36)'/%3E%3Cpath d='M20 28h24M20 35h24M20 42h16' stroke='%23a1866f' stroke-width='3' stroke-linecap='round' transform='rotate(-4 32 36)'/%3E%3Ccircle cx='32' cy='14' r='4' fill='%23b91c1c'/%3E%3Ccircle cx='31' cy='13' r='1.5' fill='%23fca5a5'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* ===== 野獣先輩風・茶色テーマ ===== */
+    :root {
+      --brown-950: #2b1a0e;
+      --brown-900: #3b2412;
+      --brown-800: #5c3a1e;
+      --brown-700: #7c4a24;
+      --brown-600: #9a5f30;
+      --brown-500: #b87a45;
+      --brown-400: #d6a878;
+      --brown-300: #e8c9a5;
+      --brown-200: #f3e0c8;
+      --brown-100: #faf1e4;
+      --brown-50:  #fdf8f1;
+      --accent-red: #a8321e;
+      --accent-gold: #d4a017;
+    }
+    body {
+      background: var(--brown-100) !important;
+      color: var(--brown-950) !important;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS PMincho", serif;
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(124,74,36,0.06) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(124,74,36,0.05) 0%, transparent 40%);
+    }
+    h1, h2, h3 { letter-spacing: 0.04em; }
+
+    /* 見出しの「野獣」風 */
+    header h1 {
+      color: var(--brown-900) !important;
+      text-shadow: 2px 2px 0 var(--brown-300), 4px 4px 0 rgba(0,0,0,0.08);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    }
+    header { border-bottom-color: var(--brown-800) !important; }
+
     /* ===== 基本スタイル ===== */
     .threads-scroll { max-height: 480px; overflow-y: auto; scrollbar-width: thin; }
-    .post-number { font-weight: 700; color: #991b1b; }
-    .post-author { color: #15803d; font-weight: 600; }
+    .post-number { font-weight: 700; color: var(--brown-800); }
+    .post-author { color: var(--brown-700); font-weight: 600; }
     .loading-spinner {
       display: inline-block; width: 1rem; height: 1rem;
-      border: 2px solid #f3f3f3; border-top: 2px solid #991b1b;
+      border: 2px solid var(--brown-200); border-top: 2px solid var(--brown-700);
       border-radius: 50%; animation: spin 1s linear infinite;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .optimistic-item { opacity: 0.55; pointer-events: none; position: relative; }
     .optimistic-item::after {
       content: "送信中..."; position: absolute; right: 12px; top: 50%;
-      transform: translateY(-50%); font-size: 10px; color: #991b1b;
-      background: #fef2f2; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca;
+      transform: translateY(-50%); font-size: 10px; color: var(--brown-800);
+      background: var(--brown-50); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--brown-300);
     }
-    .optimistic-post { opacity: 0.6; border-left: 3px solid #f59e0b !important; }
+    .optimistic-post { opacity: 0.6; border-left: 3px solid var(--brown-500) !important; }
     #statusBanner {
       position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
       text-align: center; padding: 6px; font-size: 12px;
       transition: transform 0.3s; transform: translateY(-100%);
     }
     #statusBanner.show { transform: translateY(0); }
-    .admin-badge {
-      background: #7c2d12; color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 6px;
-    }
-    .owner-badge {
-      background: #1e40af; color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 6px;
-    }
-    .vip-badge {
-      background: #7c3aed; color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 6px;
-    }
-    .op-badge {
-      background: #b45309; color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 4px; font-weight: 700;
-    }
-    .role-post-badge {
-      color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 4px; font-weight: 700;
-    }
-    .role-post-badge.admin { background: #7c2d12; }
-    .role-post-badge.owner { background: #1e40af; }
-    .role-post-badge.vip   { background: #7c3aed; }
-    .custom-badge {
-      color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 4px; font-weight: 700;
-      display: inline-block;
-    }
-    .admin-email {
-      background: #fef3c7; color: #92400e; font-size: 11px; padding: 2px 6px;
-      border-radius: 4px; font-family: monospace;
-    }
-    .delete-btn {
-      background: #dc2626; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .delete-btn:hover { background: #b91c1c; }
+
+    /* ===== バッジ類 ===== */
+    .admin-badge { background: var(--brown-900); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+    .owner-badge { background: var(--brown-800); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+    .vip-badge { background: var(--brown-600); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+    .op-badge { background: var(--accent-gold); color: var(--brown-950); font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 700; }
+    .role-post-badge { color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 700; }
+    .role-post-badge.admin { background: var(--brown-900); }
+    .role-post-badge.owner { background: var(--brown-800); }
+    .role-post-badge.vip   { background: var(--brown-600); }
+    .custom-badge { color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 700; display: inline-block; }
+    .admin-email { background: var(--brown-200); color: var(--brown-900); font-size: 11px; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+
+    /* ===== ボタン類 ===== */
+    .delete-btn { background: var(--accent-red); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .delete-btn:hover { background: #86241a; }
     .delete-btn:disabled { background: #9ca3af; cursor: not-allowed; }
-    .reply-btn {
-      background: #2563eb; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .reply-btn:hover { background: #1d4ed8; }
-    .badge-manage-btn {
-      background: #a16207; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .badge-manage-btn:hover { background: #854d0e; }
-    .ban-btn {
-      background: #111827; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .ban-btn:hover { background: #374151; }
-    .banned-mark {
-      background: #991b1b; color: #fff; font-size: 10px; padding: 2px 6px;
-      border-radius: 4px; margin-left: 4px; font-weight: 700;
-    }
-    .reply-cancel-btn {
-      background: #6b7280; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .reply-cancel-btn:hover { background: #4b5563; }
-    .backup-btn {
-      background: #059669; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 600;
-    }
-    .backup-btn:hover { background: #047857; }
-    .restore-btn {
-      background: #0891b2; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 600;
-    }
-    .restore-btn:hover { background: #0e7490; }
-    .banlist-btn {
-      background: #7f1d1d; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 600;
-    }
-    .banlist-btn:hover { background: #991b1b; }
-    .userlist-btn {
-      background: #0369a1; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 600;
-    }
-    .userlist-btn:hover { background: #075985; }
-    .pending-btn {
-      background: #b45309; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 700;
-      position: relative;
-    }
-    .pending-btn:hover { background: #92400e; }
-    .pending-btn.has-pending {
-      background: #dc2626;
-      animation: pulseRed 1.5s infinite;
-    }
-    @keyframes pulseRed {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.7); }
-      50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
-    }
-    .publish-btn {
-      background: #7c3aed; color: #fff; font-size: 11px; padding: 6px 12px;
-      border-radius: 4px; cursor: pointer; border: none; font-weight: 700;
-    }
-    .publish-btn:hover { background: #6d28d9; }
-    .publish-btn.unpublished {
-      background: #16a34a;
-    }
-    .publish-btn.unpublished:hover { background: #15803d; }
+    .reply-btn { background: var(--brown-800); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .reply-btn:hover { background: var(--brown-900); }
+    .badge-manage-btn { background: var(--accent-gold); color: var(--brown-950); font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .badge-manage-btn:hover { background: #b88a10; }
+    .ban-btn { background: var(--brown-950); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .ban-btn:hover { background: #1a0f06; }
+    .banned-mark { background: var(--accent-red); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 700; }
+    .reply-cancel-btn { background: var(--brown-500); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .reply-cancel-btn:hover { background: var(--brown-600); }
+    .backup-btn { background: var(--brown-700); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 600; }
+    .backup-btn:hover { background: var(--brown-800); }
+    .restore-btn { background: var(--brown-600); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 600; }
+    .restore-btn:hover { background: var(--brown-700); }
+    .banlist-btn { background: var(--accent-red); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 600; }
+    .banlist-btn:hover { background: #86241a; }
+    .userlist-btn { background: var(--brown-800); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 600; }
+    .userlist-btn:hover { background: var(--brown-900); }
+    .pending-btn { background: var(--accent-gold); color: var(--brown-950); font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 700; position: relative; }
+    .pending-btn:hover { background: #b88a10; }
+    .pending-btn.has-pending { background: var(--accent-red); color:#fff; animation: pulseRed 1.5s infinite; }
+    @keyframes pulseRed { 0%,100% { box-shadow: 0 0 0 0 rgba(168,50,30,0.7); } 50% { box-shadow: 0 0 0 8px rgba(168,50,30,0); } }
+    .publish-btn { background: var(--brown-700); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: 700; }
+    .publish-btn:hover { background: var(--brown-800); }
+    .publish-btn.unpublished { background: var(--accent-red); }
+    .publish-btn.unpublished:hover { background: #86241a; }
 
-    .lockdown-btn {
-      background: #7f1d1d; color: #fff; font-size: 11px; padding: 6px 14px;
-      border-radius: 4px; cursor: pointer; border: 2px solid #fbbf24;
-      font-weight: 900; letter-spacing: 0.05em;
-      animation: pulseDark 1.8s infinite;
-    }
-    .lockdown-btn:hover { background: #991b1b; }
-    .lockdown-btn.active {
-      background: #dc2626;
-      border-color: #fef2f2;
-      animation: pulseRed 1.2s infinite;
-    }
-    @keyframes pulseDark {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.6); }
-      50% { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
-    }
+    .lockdown-btn { background: var(--brown-950); color: var(--accent-gold); font-size: 11px; padding: 6px 14px; border-radius: 4px; cursor: pointer; border: 2px solid var(--accent-gold); font-weight: 900; letter-spacing: 0.05em; animation: pulseDark 1.8s infinite; }
+    .lockdown-btn:hover { background: #1a0f06; }
+    .lockdown-btn.active { background: var(--accent-red); color:#fff; border-color: var(--brown-200); animation: pulseRed 1.2s infinite; }
+    @keyframes pulseDark { 0%,100% { box-shadow: 0 0 0 0 rgba(212,160,23,0.6); } 50% { box-shadow: 0 0 0 6px rgba(212,160,23,0); } }
+    .alarm-btn { background: var(--accent-red); color: #fff; font-size: 11px; padding: 6px 14px; border-radius: 4px; cursor: pointer; border: 2px solid var(--accent-gold); font-weight: 900; letter-spacing: 0.05em; }
+    .alarm-btn:hover { background: #86241a; }
+    .alarm-btn.active { background: var(--brown-950); color: var(--accent-gold); border-color: var(--brown-400); animation: pulseRed 1.2s infinite; }
 
-    .alarm-btn {
-      background: #b91c1c; color: #fff; font-size: 11px; padding: 6px 14px;
-      border-radius: 4px; cursor: pointer; border: 2px solid #fde047;
-      font-weight: 900; letter-spacing: 0.05em;
-    }
-    .alarm-btn:hover { background: #dc2626; }
-    .alarm-btn.active {
-      background: #7c2d12;
-      border-color: #fca5a5;
-      animation: pulseRed 1.2s infinite;
-    }
-
-    /* ===== アラートトースト（画面右上） ===== */
+    /* ===== アラートトースト ===== */
     #alarmToast {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 99999;
-      max-width: 380px;
-      min-width: 280px;
-      background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%);
-      border: 3px solid #fde047;
+      position: fixed; top: 16px; right: 16px; z-index: 99999;
+      max-width: 380px; min-width: 280px;
+      background: linear-gradient(135deg, var(--brown-950) 0%, var(--brown-800) 100%);
+      border: 3px solid var(--accent-gold);
       border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(220,38,38,0.6);
-      color: #fff;
-      font-family: sans-serif;
-      padding: 14px 16px;
-      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(168,50,30,0.5);
+      color: #fff; font-family: "Hiragino Mincho ProN", serif;
+      padding: 14px 16px; display: none;
       animation: alarmToastSlide 0.4s ease-out, alarmToastPulse 1.8s infinite;
       pointer-events: auto;
     }
     #alarmToast.show { display: block; }
-    @keyframes alarmToastSlide {
-      from { transform: translateX(120%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
+    @keyframes alarmToastSlide { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     @keyframes alarmToastPulse {
-      0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(220,38,38,0.6); }
-      50% { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 45px rgba(253,224,71,0.8); }
+      0%,100% { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(168,50,30,0.5); }
+      50% { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 45px rgba(212,160,23,0.7); }
     }
-    #alarmToast .alarm-toast-head {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 8px;
-      border-bottom: 1px solid rgba(253,224,71,0.4);
-      padding-bottom: 6px;
-    }
-    #alarmToast .alarm-toast-icon {
-      font-size: 24px;
-      animation: alarmIconShake 0.6s infinite;
-      filter: drop-shadow(0 0 8px #fde047);
-    }
-    @keyframes alarmIconShake {
-      0%, 100% { transform: rotate(-12deg); }
-      50% { transform: rotate(12deg); }
-    }
-    #alarmToast .alarm-toast-title {
-      font-size: 15px; font-weight: 900;
-      letter-spacing: 0.1em;
-      color: #fde047;
-      text-shadow: 0 0 10px rgba(253,224,71,0.8);
-    }
-    #alarmToast .alarm-toast-body {
-      font-size: 12px;
-      line-height: 1.6;
-    }
-    #alarmToast .alarm-toast-body .row {
-      display: flex; gap: 6px;
-      margin-bottom: 4px;
-    }
-    #alarmToast .alarm-toast-body .label {
-      color: #fde047; font-weight: 700;
-      white-space: nowrap;
-    }
-    #alarmToast .alarm-toast-body .value {
-      color: #fff;
-      word-break: break-word;
-    }
-    #alarmToast .alarm-toast-footer {
-      margin-top: 8px;
-      font-size: 10px;
-      color: #fecaca;
-      font-family: monospace;
-      text-align: right;
-      opacity: 0.8;
-    }
+    #alarmToast .alarm-toast-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(212,160,23,0.4); padding-bottom: 6px; }
+    #alarmToast .alarm-toast-icon { font-size: 24px; animation: alarmIconShake 0.6s infinite; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+    @keyframes alarmIconShake { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+    #alarmToast .alarm-toast-title { font-size: 15px; font-weight: 900; letter-spacing: 0.1em; color: var(--accent-gold); text-shadow: 0 0 10px rgba(212,160,23,0.8); }
+    #alarmToast .alarm-toast-body { font-size: 12px; line-height: 1.6; }
+    #alarmToast .alarm-toast-body .row { display: flex; gap: 6px; margin-bottom: 4px; }
+    #alarmToast .alarm-toast-body .label { color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
+    #alarmToast .alarm-toast-body .value { color: #fff; word-break: break-word; }
+    #alarmToast .alarm-toast-footer { margin-top: 8px; font-size: 10px; color: var(--brown-300); font-family: monospace; text-align: right; opacity: 0.8; }
 
+    /* ===== 投稿カード ===== */
     .post-card {
-      background: #fff;
-      border: 1px solid #d1d5db;
+      background: var(--brown-50);
+      border: 1px solid var(--brown-300);
       border-radius: 6px;
       padding: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(91,58,30,0.10);
     }
-    .post-card.banned-post {
-      opacity: 0.5;
-      border-left: 3px solid #111827;
-    }
-    .post-children {
-      margin-left: 20px;
-      padding-left: 12px;
-      border-left: 2px solid #fbbf24;
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .post-card.banned-post { opacity: 0.5; border-left: 3px solid var(--brown-950); }
+    .post-children { margin-left: 20px; padding-left: 12px; border-left: 2px solid var(--brown-400); margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
     .post-tree { display: flex; flex-direction: column; gap: 8px; }
-    .inline-reply-box {
-      margin-top: 8px;
-      padding: 10px;
-      background: #fffbeb;
-      border: 1px dashed #fbbf24;
-      border-radius: 6px;
-    }
-    .inline-reply-box textarea {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 4px;
-      padding: 6px;
-      font-size: 13px;
-      outline: none;
-      resize: vertical;
-      min-height: 60px;
-    }
-    .inline-reply-box textarea:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
-    }
-    .reply-target-label {
-      font-size: 11px;
-      color: #92400e;
-      background: #fef3c7;
-      padding: 2px 8px;
-      border-radius: 4px;
-      display: inline-block;
-      margin-bottom: 6px;
-    }
-    .post-file {
-      margin-top: 8px;
-      padding: 8px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      border-radius: 6px;
-    }
-    .post-file img {
-      max-height: 320px;
-      max-width: 100%;
-      border-radius: 4px;
-      border: 1px solid #e5e7eb;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .post-file a {
-      font-size: 12px;
-      color: #2563eb;
-      text-decoration: underline;
-      word-break: break-all;
-    }
-    input[type="file"]::file-selector-button {
-      background-color: #e5e7eb;
-      border: 1px solid #d1d5db;
-      border-radius: 0.375rem;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-    input[type="file"]::file-selector-button:hover { background-color: #d1d5db; }
-    .preview-box {
-      margin-top: 8px;
-      padding: 8px;
-      border: 1px dashed #cbd5e1;
-      border-radius: 6px;
-      background: #f8fafc;
-      display: none;
-    }
+    .inline-reply-box { margin-top: 8px; padding: 10px; background: var(--brown-100); border: 1px dashed var(--brown-500); border-radius: 6px; }
+    .inline-reply-box textarea { width: 100%; border: 1px solid var(--brown-300); border-radius: 4px; padding: 6px; font-size: 13px; outline: none; resize: vertical; min-height: 60px; background: #fff; }
+    .inline-reply-box textarea:focus { border-color: var(--brown-700); box-shadow: 0 0 0 2px rgba(124,74,36,0.15); }
+    .reply-target-label { font-size: 11px; color: var(--brown-900); background: var(--brown-200); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+    .post-file { margin-top: 8px; padding: 8px; border: 1px solid var(--brown-200); background: var(--brown-50); border-radius: 6px; }
+    .post-file img { max-height: 320px; max-width: 100%; border-radius: 4px; border: 1px solid var(--brown-200); display: block; margin-bottom: 4px; }
+    .post-file a { font-size: 12px; color: var(--brown-800); text-decoration: underline; word-break: break-all; }
+
+    input[type="file"]::file-selector-button { background-color: var(--brown-200); border: 1px solid var(--brown-400); border-radius: 0.375rem; padding: 0.25rem 0.75rem; font-size: 0.75rem; margin-right: 0.5rem; cursor: pointer; color: var(--brown-900); }
+    input[type="file"]::file-selector-button:hover { background-color: var(--brown-300); }
+    .preview-box { margin-top: 8px; padding: 8px; border: 1px dashed var(--brown-400); border-radius: 6px; background: var(--brown-50); display: none; }
     .preview-box.show { display: block; }
     .preview-box img { max-height: 160px; border-radius: 4px; }
-    .preview-info { font-size: 11px; color: #64748b; margin-top: 4px; }
-    .badge-toggle-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #374151;
-      margin-left: 6px;
-      background: #f3f4f6;
-      padding: 3px 8px;
-      border-radius: 4px;
-      border: 1px solid #e5e7eb;
-      cursor: pointer;
-      user-select: none;
-    }
+    .preview-info { font-size: 11px; color: var(--brown-700); margin-top: 4px; }
+    .badge-toggle-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--brown-900); margin-left: 6px; background: var(--brown-100); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--brown-300); cursor: pointer; user-select: none; }
     .badge-toggle-wrap input { cursor: pointer; }
 
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 10000; padding: 16px;
-    }
+    /* ===== モーダル ===== */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(43,26,14,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 16px; }
     .modal-backdrop.hidden { display: none; }
-    .modal-content {
-      background: #fff; border-radius: 8px; padding: 20px;
-      max-width: 560px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      max-height: 90vh; overflow-y: auto;
-    }
-    .color-swatch-row {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
-    }
-    .color-swatch {
-      width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
-      border: 2px solid transparent;
-    }
-    .color-swatch.selected {
-      border-color: #111827;
-      box-shadow: 0 0 0 2px #fff inset;
-    }
-    .badge-list-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;
-      background: #f9fafb; margin-bottom: 6px;
-    }
+    .modal-content { background: var(--brown-50); border-radius: 8px; padding: 20px; max-width: 560px; width: 100%; box-shadow: 0 8px 24px rgba(43,26,14,0.4); max-height: 90vh; overflow-y: auto; border: 2px solid var(--brown-400); }
+    .color-swatch-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .color-swatch { width: 28px; height: 28px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+    .color-swatch.selected { border-color: var(--brown-950); box-shadow: 0 0 0 2px #fff inset; }
+    .badge-list-item { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--brown-200); border-radius: 6px; background: var(--brown-50); margin-bottom: 6px; }
     .badge-list-item .badge-chip-wrap { flex: 1; min-width: 0; }
-    .badge-list-item .btn-mini {
-      font-size: 11px; padding: 3px 8px; border-radius: 4px;
-      border: none; cursor: pointer; color: #fff;
-    }
-    .badge-list-item .btn-edit { background: #2563eb; }
-    .badge-list-item .btn-edit:hover { background: #1d4ed8; }
-    .badge-list-item .btn-del { background: #dc2626; }
-    .badge-list-item .btn-del:hover { background: #b91c1c; }
-    .add-badge-btn {
-      background: #16a34a; color: #fff; font-size: 12px;
-      padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer;
-      font-weight: 600;
-    }
-    .add-badge-btn:hover { background: #15803d; }
-    .editor-box {
-      border: 1px solid #fbbf24; background: #fffbeb;
-      border-radius: 6px; padding: 12px; margin-top: 10px;
-    }
+    .badge-list-item .btn-mini { font-size: 11px; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; color: #fff; }
+    .badge-list-item .btn-edit { background: var(--brown-700); }
+    .badge-list-item .btn-edit:hover { background: var(--brown-800); }
+    .badge-list-item .btn-del { background: var(--accent-red); }
+    .badge-list-item .btn-del:hover { background: #86241a; }
+    .add-badge-btn { background: var(--brown-700); color: #fff; font-size: 12px; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
+    .add-badge-btn:hover { background: var(--brown-800); }
+    .editor-box { border: 1px solid var(--brown-400); background: var(--brown-100); border-radius: 6px; padding: 12px; margin-top: 10px; }
     .editor-box.hidden { display: none; }
 
-    .ban-list-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px; border: 1px solid #fecaca; border-radius: 6px;
-      background: #fef2f2; margin-bottom: 6px;
-      font-size: 12px;
-    }
+    .ban-list-row { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #e5b4a8; border-radius: 6px; background: #fbeee9; margin-bottom: 6px; font-size: 12px; }
     .ban-list-row .info { flex: 1; min-width: 0; }
-    .ban-list-row .info .email-line {
-      font-family: monospace; font-size: 11px;
-      color: #991b1b; word-break: break-all;
-    }
-    .ban-list-row .info .meta-line {
-      font-size: 10px; color: #6b7280; margin-top: 2px;
-      word-break: break-all;
-    }
-    .ban-list-row .unban-btn {
-      background: #16a34a; color: #fff; font-size: 11px;
-      padding: 4px 10px; border-radius: 4px; border: none;
-      cursor: pointer; white-space: nowrap;
-    }
-    .ban-list-row .unban-btn:hover { background: #15803d; }
+    .ban-list-row .info .email-line { font-family: monospace; font-size: 11px; color: var(--accent-red); word-break: break-all; }
+    .ban-list-row .info .meta-line { font-size: 10px; color: var(--brown-700); margin-top: 2px; word-break: break-all; }
+    .ban-list-row .unban-btn { background: var(--brown-700); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: none; cursor: pointer; white-space: nowrap; }
+    .ban-list-row .unban-btn:hover { background: var(--brown-800); }
 
-    .user-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;
-      background: #f9fafb; margin-bottom: 6px; font-size: 12px;
-    }
+    .user-row { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--brown-200); border-radius: 6px; background: var(--brown-50); margin-bottom: 6px; font-size: 12px; }
     .user-row .info { flex: 1; min-width: 0; }
-    .user-row .email-line {
-      font-family: monospace; font-size: 12px;
-      color: #1e40af; word-break: break-all; font-weight: 600;
-    }
-    .user-row .nickname-line {
-      font-size: 12px; margin-top: 2px;
-      color: #1d4ed8; font-weight: 700;
-      word-break: break-all;
-    }
-    .user-row .nickname-line .nickname-value {
-      background: #dbeafe; color: #1e3a8a;
-      padding: 1px 6px; border-radius: 4px;
-      display: inline-block;
-    }
-    .user-row .nickname-line .nickname-empty {
-      color: #9ca3af; font-weight: 400;
-    }
-    .user-row .meta-line {
-      font-size: 10px; color: #6b7280; margin-top: 2px;
-      word-break: break-all;
-    }
-    .user-row .role-tag {
-      font-size: 10px; padding: 2px 6px; border-radius: 4px;
-      color: #fff; font-weight: 700;
-    }
-    .user-row .role-tag.admin { background: #7c2d12; }
-    .user-row .role-tag.owner { background: #1e40af; }
-    .user-row .role-tag.vip   { background: #7c3aed; }
-    .user-row .role-tag.none  { background: #6b7280; }
-    .user-row .role-tag.banned { background: #991b1b; }
+    .user-row .email-line { font-family: monospace; font-size: 12px; color: var(--brown-800); word-break: break-all; font-weight: 600; }
+    .user-row .nickname-line { font-size: 12px; margin-top: 2px; color: var(--brown-900); font-weight: 700; word-break: break-all; }
+    .user-row .nickname-line .nickname-value { background: var(--brown-200); color: var(--brown-950); padding: 1px 6px; border-radius: 4px; display: inline-block; }
+    .user-row .nickname-line .nickname-empty { color: var(--brown-500); font-weight: 400; }
+    .user-row .meta-line { font-size: 10px; color: var(--brown-600); margin-top: 2px; word-break: break-all; }
+    .user-row .role-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: #fff; font-weight: 700; }
+    .user-row .role-tag.admin { background: var(--brown-900); }
+    .user-row .role-tag.owner { background: var(--brown-800); }
+    .user-row .role-tag.vip   { background: var(--brown-600); }
+    .user-row .role-tag.none  { background: var(--brown-500); }
+    .user-row .role-tag.banned { background: var(--accent-red); }
     .user-row .action-btns { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 220px; }
-    .user-row .btn-mini {
-      font-size: 10px; padding: 3px 8px; border-radius: 4px;
-      border: none; cursor: pointer; color: #fff; white-space: nowrap;
-    }
-    .user-row .btn-ban { background: #111827; }
-    .user-row .btn-ban:hover { background: #374151; }
-    .user-row .btn-unban { background: #16a34a; }
-    .user-row .btn-unban:hover { background: #15803d; }
-    .user-row .btn-copy { background: #6b7280; }
-    .user-row .btn-copy:hover { background: #4b5563; }
-    .user-row .btn-nickname { background: #1d4ed8; }
-    .user-row .btn-nickname:hover { background: #1e3a8a; }
+    .user-row .btn-mini { font-size: 10px; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; color: #fff; white-space: nowrap; }
+    .user-row .btn-ban { background: var(--brown-950); }
+    .user-row .btn-ban:hover { background: #1a0f06; }
+    .user-row .btn-unban { background: var(--brown-700); }
+    .user-row .btn-unban:hover { background: var(--brown-800); }
+    .user-row .btn-copy { background: var(--brown-500); }
+    .user-row .btn-copy:hover { background: var(--brown-600); }
+    .user-row .btn-nickname { background: var(--brown-800); }
+    .user-row .btn-nickname:hover { background: var(--brown-900); }
 
-    .user-search-input {
-      width: 100%; border: 1px solid #d1d5db; padding: 8px;
-      border-radius: 6px; font-size: 13px; margin-bottom: 10px;
-      outline: none;
-    }
-    .user-search-input:focus {
-      border-color: #0369a1;
-      box-shadow: 0 0 0 2px rgba(3,105,161,0.15);
-    }
+    .user-search-input { width: 100%; border: 1px solid var(--brown-300); padding: 8px; border-radius: 6px; font-size: 13px; margin-bottom: 10px; outline: none; background: #fff; }
+    .user-search-input:focus { border-color: var(--brown-700); box-shadow: 0 0 0 2px rgba(124,74,36,0.15); }
 
-    .pending-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px; border: 1px solid #fcd34d; border-radius: 6px;
-      background: #fffbeb; margin-bottom: 6px; font-size: 12px;
-    }
+    .pending-row { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--accent-gold); border-radius: 6px; background: var(--brown-100); margin-bottom: 6px; font-size: 12px; }
     .pending-row .info { flex: 1; min-width: 0; }
-    .pending-row .email-line {
-      font-family: monospace; font-size: 12px;
-      color: #92400e; word-break: break-all; font-weight: 700;
-    }
-    .pending-row .meta-line {
-      font-size: 10px; color: #6b7280; margin-top: 2px;
-      word-break: break-all;
-    }
-    .pending-row .approve-btn {
-      background: #16a34a; color: #fff; font-size: 11px;
-      padding: 4px 10px; border-radius: 4px; border: none;
-      cursor: pointer; white-space: nowrap; font-weight: 700;
-    }
-    .pending-row .approve-btn:hover { background: #15803d; }
-    .pending-row .reject-btn {
-      background: #dc2626; color: #fff; font-size: 11px;
-      padding: 4px 10px; border-radius: 4px; border: none;
-      cursor: pointer; white-space: nowrap; font-weight: 700;
-    }
-    .pending-row .reject-btn:hover { background: #b91c1c; }
+    .pending-row .email-line { font-family: monospace; font-size: 12px; color: var(--brown-900); word-break: break-all; font-weight: 700; }
+    .pending-row .meta-line { font-size: 10px; color: var(--brown-600); margin-top: 2px; word-break: break-all; }
+    .pending-row .approve-btn { background: var(--brown-700); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: none; cursor: pointer; white-space: nowrap; font-weight: 700; }
+    .pending-row .approve-btn:hover { background: var(--brown-800); }
+    .pending-row .reject-btn { background: var(--accent-red); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: none; cursor: pointer; white-space: nowrap; font-weight: 700; }
+    .pending-row .reject-btn:hover { background: #86241a; }
 
-    #banOverlay {
-      position: fixed; inset: 0; background: #000;
-      z-index: 99999; display: none;
-      align-items: center; justify-content: center;
-      color: #fff; text-align: center; font-family: sans-serif;
-      flex-direction: column; padding: 20px;
-    }
+    /* ===== オーバーレイ ===== */
+    #banOverlay { position: fixed; inset: 0; background: var(--brown-950); z-index: 99999; display: none; align-items: center; justify-content: center; color: #f5e6d3; text-align: center; font-family: "Hiragino Mincho ProN", serif; flex-direction: column; padding: 20px; }
     #banOverlay.show { display: flex; }
-    #banOverlay .ban-msg {
-      font-size: 24px; font-weight: bold;
-      letter-spacing: 0.1em;
-    }
-    #banOverlay .ban-sub {
-      font-size: 14px; margin-top: 16px; color: #fca5a5;
-      line-height: 1.6; max-width: 400px;
-    }
-    #banOverlay .ban-actions {
-      margin-top: 24px;
-      display: flex; gap: 12px; flex-wrap: wrap;
-      justify-content: center;
-    }
-    #banOverlay .ban-actions button {
-      font-size: 13px; padding: 10px 20px; border-radius: 6px;
-      border: none; cursor: pointer; font-weight: 600;
-      font-family: sans-serif;
-    }
-    #banOverlay .btn-switch-account {
-      background: #2563eb; color: #fff;
-    }
-    #banOverlay .btn-switch-account:hover {
-      background: #1d4ed8;
-    }
+    #banOverlay .ban-msg { font-size: 24px; font-weight: bold; letter-spacing: 0.1em; }
+    #banOverlay .ban-sub { font-size: 14px; margin-top: 16px; color: var(--brown-300); line-height: 1.6; max-width: 400px; }
+    #banOverlay .ban-actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    #banOverlay .ban-actions button { font-size: 13px; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-family: sans-serif; }
+    #banOverlay .btn-switch-account { background: var(--brown-700); color: #fff; }
+    #banOverlay .btn-switch-account:hover { background: var(--brown-800); }
 
-    #unpublishedOverlay {
-      position: fixed; inset: 0;
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      z-index: 99998;
-      display: none;
-      flex-direction: column;
-      border: 8px solid #78350f;
-      box-shadow: inset 0 0 60px rgba(120, 53, 15, 0.3);
-      box-sizing: border-box;
-      overflow: auto;
-    }
+    #unpublishedOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--brown-200) 0%, var(--brown-300) 100%); z-index: 99998; display: none; flex-direction: column; border: 8px solid var(--brown-900); box-shadow: inset 0 0 60px rgba(59,36,18,0.35); box-sizing: border-box; overflow: auto; }
     #unpublishedOverlay.show { display: flex; }
-
-    #unpublishedOverlay .unp-center {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      text-align: center;
-      font-family: sans-serif;
-      color: #78350f;
-    }
-
-    #unpublishedOverlay .unp-bar {
-      background: #78350f;
-      color: #fde68a;
-      font-size: 11px;
-      padding: 6px 14px;
-      font-family: monospace;
-      letter-spacing: 0.1em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #unpublishedOverlay .unp-bar::before {
-      content: "🔒";
-      font-size: 12px;
-    }
-
-    #unpublishedOverlay .unp-msg {
-      font-size: 48px; font-weight: bold;
-      letter-spacing: 0.05em;
-      text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.1);
-      margin-bottom: 8px;
-    }
-    #unpublishedOverlay .unp-sub {
-      font-size: 15px; margin-top: 16px; color: #92400e;
-      line-height: 1.8; max-width: 480px;
-    }
-    #unpublishedOverlay .unp-action {
-      margin-top: 36px;
-    }
-    #unpublishedOverlay .unp-go-btn {
-      background: #78350f; color: #fff;
-      font-size: 20px; padding: 16px 56px; border-radius: 10px;
-      border: none; cursor: pointer; font-weight: 700;
-      font-family: sans-serif;
-      box-shadow: 0 5px 0 #451a03;
-      transition: transform 0.1s, box-shadow 0.1s;
-      letter-spacing: 0.1em;
-    }
-    #unpublishedOverlay .unp-go-btn:hover {
-      background: #451a03;
-    }
-    #unpublishedOverlay .unp-go-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #451a03;
-    }
-    #unpublishedOverlay .unp-footer {
-      margin-top: 24px;
-      font-size: 11px;
-      color: #a16207;
-      font-family: monospace;
-      letter-spacing: 0.05em;
-    }
-
-    /* ===== メンテナンス中に表示する画像 ===== */
-    #unpublishedOverlay .unp-image {
-      margin: 16px auto 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #unpublishedOverlay .unp-image img {
-      max-width: min(280px, 70vw);
-      max-height: 220px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-      border: 3px solid #78350f;
-      box-shadow: 0 6px 18px rgba(120, 53, 15, 0.35), 0 0 0 3px rgba(255,255,255,0.6) inset;
-      background: #fff;
-      padding: 4px;
-    }
+    #unpublishedOverlay .unp-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; font-family: "Hiragino Mincho ProN", serif; color: var(--brown-950); }
+    #unpublishedOverlay .unp-bar { background: var(--brown-950); color: var(--accent-gold); font-size: 11px; padding: 6px 14px; font-family: monospace; letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px; }
+    #unpublishedOverlay .unp-bar::before { content: "🔒"; font-size: 12px; }
+    #unpublishedOverlay .unp-msg { font-size: 48px; font-weight: bold; letter-spacing: 0.05em; text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.1); margin-bottom: 8px; }
+    #unpublishedOverlay .unp-sub { font-size: 15px; margin-top: 16px; color: var(--brown-800); line-height: 1.8; max-width: 480px; }
+    #unpublishedOverlay .unp-action { margin-top: 36px; }
+    #unpublishedOverlay .unp-go-btn { background: var(--brown-900); color: #fff; font-size: 20px; padding: 16px 56px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; font-family: "Hiragino Mincho ProN", serif; box-shadow: 0 5px 0 var(--brown-950); transition: transform 0.1s, box-shadow 0.1s; letter-spacing: 0.1em; }
+    #unpublishedOverlay .unp-go-btn:hover { background: var(--brown-950); }
+    #unpublishedOverlay .unp-go-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--brown-950); }
+    #unpublishedOverlay .unp-footer { margin-top: 24px; font-size: 11px; color: var(--brown-700); font-family: monospace; letter-spacing: 0.05em; }
+    #unpublishedOverlay .unp-image { margin: 16px auto 8px; display: flex; align-items: center; justify-content: center; }
+    #unpublishedOverlay .unp-image img { max-width: min(280px, 70vw); max-height: 220px; width: auto; height: auto; object-fit: contain; border-radius: 12px; border: 3px solid var(--brown-900); box-shadow: 0 6px 18px rgba(59,36,18,0.4), 0 0 0 3px rgba(255,255,255,0.6) inset; background: #fff; padding: 4px; }
 
     /* ===== 左上固定画像 ===== */
-    #cornerImage {
-      position: fixed;
-      top: 12px;
-      left: 12px;
-      z-index: 99990;
-      pointer-events: none;
-      display: block;
-    }
-    #cornerImage img {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
-      border-radius: 10px;
-      background: transparent;
-    }
-    @media (max-width: 640px) {
-      #cornerImage img {
-        width: 80px;
-        height: 80px;
-      }
-    }
+    #cornerImage { position: fixed; top: 12px; left: 12px; z-index: 99990; pointer-events: none; display: block; }
+    #cornerImage img { width: 120px; height: 120px; object-fit: contain; display: block; filter: drop-shadow(0 3px 8px rgba(43,26,14,0.5)); border-radius: 10px; background: transparent; }
+    @media (max-width: 640px) { #cornerImage img { width: 80px; height: 80px; } }
 
     #siteRules { transition: box-shadow 0.2s; }
     #siteRules.collapsed #rulesContent { display: none; }
     #siteRules.collapsed #rulesToggleIcon { transform: rotate(-90deg); }
     #rulesToggleIcon { transition: transform 0.2s; display: inline-block; }
 
-    #bootOverlay {
-      position: fixed; inset: 0; background: #111827;
-      z-index: 99997; display: flex;
-      align-items: center; justify-content: center;
-      color: #fff; font-family: sans-serif;
-      flex-direction: column; gap: 16px;
-    }
+    #bootOverlay { position: fixed; inset: 0; background: var(--brown-950); z-index: 99997; display: flex; align-items: center; justify-content: center; color: #f5e6d3; font-family: "Hiragino Mincho ProN", serif; flex-direction: column; gap: 16px; }
     #bootOverlay.hidden { display: none; }
-    #bootOverlay .boot-msg {
-      font-size: 14px; color: #9ca3af;
-    }
-    #bootOverlay .boot-spinner {
-      width: 40px; height: 40px;
-      border: 3px solid #374151;
-      border-top-color: #ef4444;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    #bootOverlay .boot-msg { font-size: 14px; color: var(--brown-300); }
+    #bootOverlay .boot-spinner { width: 40px; height: 40px; border: 3px solid var(--brown-800); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-    body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    input, textarea, [contenteditable="true"] {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-    }
+    body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+    input, textarea, [contenteditable="true"] { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
 
-    .badge-feature-list {
-      margin-top: 6px;
-      font-size: 11px;
-      color: #4b5563;
-      background: #f3f4f6;
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: 1px solid #e5e7eb;
-    }
-    .badge-feature-list .feat-tag {
-      display: inline-block;
-      background: #e5e7eb;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      margin: 2px;
-      font-size: 10px;
-      font-weight: 600;
-    }
-    .badge-feature-list .feat-tag.active {
-      background: #16a34a;
-      color: #fff;
-    }
+    .badge-feature-list { margin-top: 6px; font-size: 11px; color: var(--brown-900); background: var(--brown-100); padding: 6px 8px; border-radius: 4px; border: 1px solid var(--brown-200); }
+    .badge-feature-list .feat-tag { display: inline-block; background: var(--brown-200); padding: 2px 8px; border-radius: 9999px; margin: 2px; font-size: 10px; font-weight: 600; }
+    .badge-feature-list .feat-tag.active { background: var(--brown-700); color: #fff; }
 
     #boardView { margin-top: 16px; }
-    .board-card {
-      background: #fff;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      border-left: 4px solid #b45309;
-    }
-    .board-card .board-title {
-      font-weight: 700;
-      color: #78350f;
-      font-size: 18px;
-    }
-    .board-card .board-meta {
-      font-size: 11px;
-      color: #6b7280;
-      margin-top: 2px;
-    }
-    .board-card .board-body {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #1f2937;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+    .board-card { background: var(--brown-50); border: 1px solid var(--brown-300); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(91,58,30,0.08); border-left: 4px solid var(--brown-700); }
+    .board-card .board-title { font-weight: 700; color: var(--brown-950); font-size: 18px; }
+    .board-card .board-meta { font-size: 11px; color: var(--brown-600); margin-top: 2px; }
+    .board-card .board-body { margin-top: 8px; font-size: 14px; color: var(--brown-950); white-space: pre-wrap; word-break: break-word; }
     .board-card .board-img { margin-top: 10px; }
-    .board-card .board-img img {
-      max-height: 360px;
-      max-width: 100%;
-      border-radius: 6px;
-      border: 1px solid #e5e7eb;
-    }
-    .board-card .board-img a {
-      font-size: 12px;
-      color: #2563eb;
-      text-decoration: underline;
-      word-break: break-all;
-    }
-    .board-delete-btn {
-      background: #dc2626; color: #fff; font-size: 11px; padding: 3px 10px;
-      border-radius: 4px; cursor: pointer; border: none;
-    }
-    .board-delete-btn:hover { background: #b91c1c; }
+    .board-card .board-img img { max-height: 360px; max-width: 100%; border-radius: 6px; border: 1px solid var(--brown-200); }
+    .board-card .board-img a { font-size: 12px; color: var(--brown-800); text-decoration: underline; word-break: break-all; }
+    .board-delete-btn { background: var(--accent-red); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; border: none; }
+    .board-delete-btn:hover { background: #86241a; }
+    .board-publish-btn { background: var(--brown-800); color: #fff; font-size: 12px; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 700; }
+    .board-publish-btn:hover { background: var(--brown-900); }
+    .board-publish-btn:disabled { background: #b0a090; cursor: not-allowed; }
+    .board-form-box { background: var(--brown-100); border: 1px solid var(--brown-300); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+    .board-readonly-note { font-size: 12px; color: var(--brown-900); background: var(--brown-100); border: 1px solid var(--brown-300); border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; }
 
-    .board-publish-btn {
-      background: #b45309; color: #fff; font-size: 12px; padding: 8px 18px;
-      border-radius: 6px; border: none; cursor: pointer; font-weight: 700;
-    }
-    .board-publish-btn:hover { background: #92400e; }
-    .board-publish-btn:disabled { background: #9ca3af; cursor: not-allowed; }
-
-    .board-form-box {
-      background: #fffbeb;
-      border: 1px solid #fcd34d;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .board-readonly-note {
-      font-size: 12px;
-      color: #92400e;
-      background: #fef3c7;
-      border: 1px solid #fcd34d;
-      border-radius: 6px;
-      padding: 8px 12px;
-      margin-bottom: 16px;
-    }
-
-    /* ===== 新着管理関連スタイル ===== */
-    .thread-item-unread {
-      background: #fffbeb !important;
-      border-left: 4px solid #f59e0b !important;
-    }
-    .thread-new-badge {
-      background: #f59e0b;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      white-space: nowrap;
-      animation: pulseOrange 1.6s infinite;
-    }
-    @keyframes pulseOrange {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); }
-      50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
-    }
-    .unread-count-badge {
-      background: #dc2626;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 7px;
-      border-radius: 9999px;
-      white-space: nowrap;
-    }
-    .post-new-badge {
-      background: #f59e0b;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-left: 4px;
-      animation: pulseOrange 1.6s infinite;
-    }
-    .unread-only-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #374151;
-      background: #fef3c7;
-      border: 1px solid #fcd34d;
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      user-select: none;
-    }
+    .thread-item-unread { background: var(--brown-100) !important; border-left: 4px solid var(--brown-700) !important; }
+    .thread-new-badge { background: var(--brown-700); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; white-space: nowrap; animation: pulseBrown 1.6s infinite; }
+    @keyframes pulseBrown { 0%,100% { box-shadow: 0 0 0 0 rgba(124,74,36,0.7); } 50% { box-shadow: 0 0 0 6px rgba(124,74,36,0); } }
+    .unread-count-badge { background: var(--accent-red); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 9999px; white-space: nowrap; }
+    .post-new-badge { background: var(--brown-700); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; animation: pulseBrown 1.6s infinite; }
+    .unread-only-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--brown-900); background: var(--brown-100); border: 1px solid var(--brown-300); padding: 4px 10px; border-radius: 6px; cursor: pointer; user-select: none; }
     .unread-only-wrap input { cursor: pointer; }
-    .thread-list-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-    }
+    .thread-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--brown-300); padding-bottom: 6px; margin-bottom: 12px; }
+
+    /* ===== Tailwind クラスの上書き（茶色化） ===== */
+    .bg-amber-50 { background-color: var(--brown-100) !important; }
+    .border-amber-200 { border-color: var(--brown-300) !important; }
+    .text-red-900 { color: var(--brown-900) !important; }
+    .border-red-800 { border-color: var(--brown-800) !important; }
+    .bg-red-800 { background-color: var(--brown-800) !important; }
+    .bg-red-800:hover, .hover\:bg-red-900:hover { background-color: var(--brown-950) !important; }
+    .bg-red-900 { background-color: var(--brown-900) !important; }
+    .bg-red-900:hover, .hover\:bg-red-800:hover { background-color: var(--brown-800) !important; }
+    .bg-gray-100 { background-color: var(--brown-100) !important; }
+    .text-gray-800 { color: var(--brown-950) !important; }
+    .text-gray-700 { color: var(--brown-900) !important; }
+    .text-gray-600 { color: var(--brown-700) !important; }
+    .text-gray-500 { color: var(--brown-600) !important; }
+    .border-gray-300 { border-color: var(--brown-300) !important; }
+    .bg-white { background-color: var(--brown-50) !important; }
+    .bg-gray-50 { background-color: var(--brown-100) !important; }
+    .bg-gray-500 { background-color: var(--brown-500) !important; }
+    .bg-gray-600 { background-color: var(--brown-600) !important; }
+    .bg-gray-600:hover, .hover\:bg-gray-700:hover { background-color: var(--brown-700) !important; }
+    .text-blue-700 { color: var(--brown-800) !important; }
+    .text-purple-700 { color: var(--brown-600) !important; }
+    .focus\:ring-red-300:focus { --tw-ring-color: rgba(124,74,36,0.4) !important; }
+    .focus\:border-red-400:focus { border-color: var(--brown-700) !important; }
+    .focus\:ring-amber-300:focus { --tw-ring-color: rgba(212,160,23,0.4) !important; }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-4xl mx-auto">
+<body class="p-4 max-w-4xl mx-auto">
 
   <!-- 左上固定画像 -->
   <div id="cornerImage">
@@ -869,21 +347,15 @@
     <div class="boot-msg">アカウントを確認しています...</div>
   </div>
 
-  <!-- アラートトースト（画面右上） -->
+  <!-- アラートトースト -->
   <div id="alarmToast">
     <div class="alarm-toast-head">
       <span class="alarm-toast-icon">🚨</span>
       <span class="alarm-toast-title">緊急アラート発令中</span>
     </div>
     <div class="alarm-toast-body">
-      <div class="row">
-        <span class="label">理由:</span>
-        <span class="value" id="alarmToastReason">緊急対応</span>
-      </div>
-      <div class="row">
-        <span class="label">発令者:</span>
-        <span class="value" id="alarmToastIssuer">管理者</span>
-      </div>
+      <div class="row"><span class="label">理由:</span><span class="value" id="alarmToastReason">緊急対応</span></div>
+      <div class="row"><span class="label">発令者:</span><span class="value" id="alarmToastIssuer">管理者</span></div>
     </div>
     <div class="alarm-toast-footer">SYSTEM ALARM</div>
   </div>
@@ -893,51 +365,44 @@
     <div class="unp-center">
       <div class="unp-msg">メンテナンス中...</div>
       <div class="unp-image">
-        <img src="https://lh3.googleusercontent.com/d/1AYPB48tOtoLlq-1gfUgpGmE1HTPonDYz"
-             alt="maintenance image"
-             referrerpolicy="no-referrer">
+        <img src="https://lh3.googleusercontent.com/d/1AYPB48tOtoLlq-1gfUgpGmE1HTPonDYz" alt="maintenance image" referrerpolicy="no-referrer">
       </div>
       <div class="unp-sub" id="unpublishedSub">現在メンテナンス中です。<br>もうしばらくお待ちください。</div>
-      <div class="unp-action">
-        <button class="unp-go-btn" id="unpGoBtn">了解</button>
-      </div>
+      <div class="unp-action"><button class="unp-go-btn" id="unpGoBtn">了解</button></div>
       <div class="unp-footer">© 掲示板 / overlay mode</div>
     </div>
   </div>
 
   <!-- 利用ルール -->
-  <div id="siteRules" class="collapsed bg-white border-2 border-red-800 rounded-lg shadow mb-4 overflow-hidden">
-    <button id="rulesToggleBtn"
-      class="w-full bg-red-900 hover:bg-red-800 text-white text-left px-4 py-3 flex items-center justify-between transition">
-      <span class="font-bold text-base flex items-center gap-2">
-        📜 ご利用ルール
-      </span>
+  <div id="siteRules" class="collapsed border-2 rounded-lg shadow mb-4 overflow-hidden" style="background: var(--brown-50); border-color: var(--brown-800);">
+    <button id="rulesToggleBtn" class="w-full text-left px-4 py-3 flex items-center justify-between transition" style="background: var(--brown-900); color: var(--brown-100);">
+      <span class="font-bold text-base flex items-center gap-2">📜 ご利用ルール</span>
       <span id="rulesToggleIcon" class="text-xl">▼</span>
     </button>
-    <div id="rulesContent" class="px-4 py-4 text-sm text-gray-800 leading-relaxed">
+    <div id="rulesContent" class="px-4 py-4 text-sm leading-relaxed" style="color: var(--brown-950);">
       <ol class="list-decimal list-inside space-y-2">
-        <li><strong class="text-red-900">Googleログイン必須</strong><br>当サイトのご利用にはGoogleアカウントでのログインが必要です。投稿は匿名で表示されます。</li>
-        <li><strong class="text-red-900">初回ログインは承認制</strong><br>初めて当サイトを利用する場合、管理者または主による承認が必要です。承認されるまでサイトをご利用いただけません。不正利用防止のためです。</li>
-        <li><strong class="text-red-900">禁止事項</strong>
-          <ul class="list-disc list-inside ml-4 mt-1 space-y-1 text-gray-700">
+        <li><strong style="color: var(--brown-900);">Googleログイン必須</strong><br>当サイトのご利用にはGoogleアカウントでのログインが必要です。投稿は匿名で表示されます。</li>
+        <li><strong style="color: var(--brown-900);">初回ログインは承認制</strong><br>初めて当サイトを利用する場合、管理者または主による承認が必要です。承認されるまでサイトをご利用いただけません。不正利用防止のためです。</li>
+        <li><strong style="color: var(--brown-900);">禁止事項</strong>
+          <ul class="list-disc list-inside ml-4 mt-1 space-y-1" style="color: var(--brown-800);">
             <li>他の利用者への誹謗中傷・脅迫・嫌がらせ</li>
             <li>荒らし行為（連投・意味のない投稿の繰り返し）</li>
             <li>個人情報の公開は、著名人やネット上の公人など一定の範囲で許可しますが、行き過ぎた場合は削除します。</li>
           </ul>
         </li>
-        <li><strong class="text-red-900">投稿内容の責任</strong><br>投稿内容は投稿者自身の責任です。運営は投稿内容について一切の責任を負いません。</li>
-        <li><strong class="text-red-900">運営による削除・BAN</strong><br>限度を超えたと判断された場合、予告なく投稿の削除・アカウントのBAN（利用停止）を行うことがあります。BANされた場合、当サイトへのアクセスが拒否されます。ただし、他人を晒すなど悪質な行為がない限り、利用停止になることはありません。お気軽にご利用ください。</li>
-        <li><strong class="text-red-900">記録される情報</strong><br>運営は以下の情報を記録しています。これらの情報は管理者・主のみが閲覧でき、一般利用者には公開されません。
-          <ul class="list-disc list-inside ml-4 mt-1 space-y-1 text-gray-700">
+        <li><strong style="color: var(--brown-900);">投稿内容の責任</strong><br>投稿内容は投稿者自身の責任です。運営は投稿内容について一切の責任を負いません。</li>
+        <li><strong style="color: var(--brown-900);">運営による削除・BAN</strong><br>限度を超えたと判断された場合、予告なく投稿の削除・アカウントのBAN（利用停止）を行うことがあります。BANされた場合、当サイトへのアクセスが拒否されます。ただし、他人を晒すなど悪質な行為がない限り、利用停止になることはありません。お気軽にご利用ください。</li>
+        <li><strong style="color: var(--brown-900);">記録される情報</strong><br>運営は以下の情報を記録しています。これらの情報は管理者・主のみが閲覧でき、一般利用者には公開されません。
+          <ul class="list-disc list-inside ml-4 mt-1 space-y-1" style="color: var(--brown-800);">
             <li>Googleアカウントのメールアドレス</li>
             <li>ログイン日時</li>
             <li>デバイス情報（ブラウザ・OS等を組み合わせた識別子）</li>
           </ul>
         </li>
-        <li><strong class="text-red-900">免責事項</strong><br>当サイトの利用によって生じたいかなる損害についても、運営は責任を負いません。予告なくサービスを変更・終了する場合があります。</li>
-        <li><strong class="text-red-900">ルールの変更</strong><br>本ルールは予告なく変更されることがあります。変更後も利用を継続した場合、変更内容に同意したものとみなします。</li>
+        <li><strong style="color: var(--brown-900);">免責事項</strong><br>当サイトの利用によって生じたいかなる損害についても、運営は責任を負いません。予告なくサービスを変更・終了する場合があります。</li>
+        <li><strong style="color: var(--brown-900);">ルールの変更</strong><br>本ルールは予告なく変更されることがあります。変更後も利用を継続した場合、変更内容に同意したものとみなします。</li>
       </ol>
-      <p class="mt-4 text-xs text-gray-500 text-right">最終更新: 2026年9月</p>
+      <p class="mt-4 text-xs text-right" style="color: var(--brown-600);">最終更新: 2026年9月</p>
     </div>
   </div>
 
@@ -949,21 +414,22 @@
     </div>
   </div>
 
-  <div id="statusBanner" class="bg-red-600 text-white"></div>
+  <div id="statusBanner" class="text-white" style="background: var(--accent-red);"></div>
 
+  <!-- 公開設定モーダル -->
   <div id="publishModal" class="modal-backdrop hidden">
     <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">🌐 サイト公開設定</h3>
-      <p class="text-xs text-gray-500 mb-4">非公開にすると、一般ユーザー・VIPの画面にメンテナンス用オーバーレイが表示されます。<br>管理者・主は通常通りサイトを使えます。</p>
-      <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-        <p class="text-xs text-gray-600 mb-1">現在のステータス:</p>
-        <p id="publishStatusLabel" class="text-sm font-bold">公開中</p>
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">🌐 サイト公開設定</h3>
+      <p class="text-xs mb-4" style="color: var(--brown-600);">非公開にすると、一般ユーザー・VIPの画面にメンテナンス用オーバーレイが表示されます。<br>管理者・主は通常通りサイトを使えます。</p>
+      <div class="mb-4 p-3 rounded" style="background: var(--brown-100); border: 1px solid var(--brown-300);">
+        <p class="text-xs mb-1" style="color: var(--brown-700);">現在のステータス:</p>
+        <p id="publishStatusLabel" class="text-sm font-bold" style="color: var(--brown-950);">公開中</p>
       </div>
-      <label class="block text-xs text-gray-600 mb-1">飛び先URL（非公開時に「了解」ボタンで飛ぶURL）:</label>
-      <input type="url" id="publishUrlInput" placeholder="https://example.com/" class="w-full border p-2 rounded text-sm mb-3 font-mono">
+      <label class="block text-xs mb-1" style="color: var(--brown-700);">飛び先URL（非公開時に「了解」ボタンで飛ぶURL）:</label>
+      <input type="url" id="publishUrlInput" placeholder="https://example.com/" class="w-full border p-2 rounded text-sm mb-3 font-mono" style="border-color: var(--brown-300); background:#fff;">
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="publishCancelBtn" class="reply-cancel-btn">キャンセル</button>
-        <button id="publishSaveUrlBtn" class="bg-blue-700 hover:bg-blue-800 text-white text-xs py-1.5 px-4 rounded font-bold">URLを保存</button>
+        <button id="publishSaveUrlBtn" class="publish-btn">URLを保存</button>
         <button id="publishToggleBtn" class="publish-btn">非公開にする</button>
       </div>
     </div>
@@ -971,100 +437,59 @@
 
   <!-- 手動アラートモーダル -->
   <div id="alarmModal" class="modal-backdrop hidden">
-    <div class="modal-content" style="max-width: 520px; border-top: 6px solid #b91c1c;">
-      <h3 class="text-lg font-bold text-red-800 mb-1">🚨 手動アラートを発令</h3>
-      <p class="text-xs text-gray-500 mb-4">
-        全ユーザー（未ログイン含む）の画面右上にアラートトーストを表示します。<br>
-        管理者・主は影響を受けません。
-      </p>
-      <label class="block text-xs text-gray-600 mb-1">発令理由（任意・全員に表示されます）:</label>
-      <input type="text" id="alarmReasonInput" maxlength="80" placeholder="例: 荒らし対応中です。しばらくお待ちください。" class="w-full border p-2 rounded text-sm mb-3">
+    <div class="modal-content" style="max-width: 520px; border-top: 6px solid var(--accent-red);">
+      <h3 class="text-lg font-bold mb-1" style="color: var(--accent-red);">🚨 手動アラートを発令</h3>
+      <p class="text-xs mb-4" style="color: var(--brown-600);">全ユーザー（未ログイン含む）の画面右上にアラートトーストを表示します。<br>管理者・主は影響を受けません。</p>
+      <label class="block text-xs mb-1" style="color: var(--brown-700);">発令理由（任意・全員に表示されます）:</label>
+      <input type="text" id="alarmReasonInput" maxlength="80" placeholder="例: 荒らし対応中です。しばらくお待ちください。" class="w-full border p-2 rounded text-sm mb-3" style="border-color: var(--brown-300); background:#fff;">
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="alarmCancelBtn" class="reply-cancel-btn">キャンセル</button>
-        <button id="alarmFireBtn" class="bg-red-700 hover:bg-red-800 text-white text-xs py-2 px-5 rounded font-bold">🚨 アラートを発令する</button>
+        <button id="alarmFireBtn" class="alarm-btn">🚨 アラートを発令する</button>
       </div>
     </div>
   </div>
 
+  <!-- バッジ管理モーダル -->
   <div id="badgeModal" class="modal-backdrop hidden">
     <div class="modal-content" style="max-width: 620px;">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">🏷️ バッジ管理（機能設定可能）</h3>
-      <p class="text-xs text-gray-500 mb-4">
-        対象: <span id="badgeTargetEmail" class="admin-email"></span>
-      </p>
-
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">🏷️ バッジ管理（機能設定可能）</h3>
+      <p class="text-xs mb-4" style="color: var(--brown-600);">対象: <span id="badgeTargetEmail" class="admin-email"></span></p>
       <div class="mb-3">
-        <p class="text-xs font-bold text-gray-600 mb-2">現在のバッジ:</p>
-        <div id="badgeListContainer">
-          <p class="text-xs text-gray-400">（なし）</p>
-        </div>
+        <p class="text-xs font-bold mb-2" style="color: var(--brown-800);">現在のバッジ:</p>
+        <div id="badgeListContainer"><p class="text-xs" style="color: var(--brown-500);">（なし）</p></div>
       </div>
-
       <button id="addBadgeBtn" class="add-badge-btn w-full mb-3">＋ 新しいバッジを追加</button>
-
       <div id="badgeEditor" class="editor-box hidden">
-        <p class="text-xs font-bold text-gray-700 mb-2" id="badgeEditorTitle">新しいバッジ</p>
-
-        <label class="block text-xs text-gray-600 mb-1">バッジ名（最大12文字）:</label>
-        <input type="text" id="badgeLabelInput" maxlength="12" placeholder="例: 常連 / 要注意人物 / 神" class="w-full border p-2 rounded text-sm mb-3">
-
-        <label class="block text-xs text-gray-600 mb-1">バッジ色:</label>
+        <p class="text-xs font-bold mb-2" id="badgeEditorTitle" style="color: var(--brown-900);">新しいバッジ</p>
+        <label class="block text-xs mb-1" style="color: var(--brown-700);">バッジ名（最大12文字）:</label>
+        <input type="text" id="badgeLabelInput" maxlength="12" placeholder="例: 常連 / 要注意人物 / 神" class="w-full border p-2 rounded text-sm mb-3" style="border-color: var(--brown-300); background:#fff;">
+        <label class="block text-xs mb-1" style="color: var(--brown-700);">バッジ色:</label>
         <div class="color-swatch-row mb-3" id="badgeColorRow"></div>
         <div class="flex items-center gap-2 mb-3">
-          <input type="color" id="badgeColorPicker" value="#ef4444" class="w-10 h-8 border rounded cursor-pointer">
-          <input type="text" id="badgeColorText" value="#ef4444" maxlength="7" class="flex-1 border p-2 rounded text-sm font-mono">
+          <input type="color" id="badgeColorPicker" value="#7c4a24" class="w-10 h-8 border rounded cursor-pointer">
+          <input type="text" id="badgeColorText" value="#7c4a24" maxlength="7" class="flex-1 border p-2 rounded text-sm font-mono" style="border-color: var(--brown-300); background:#fff;">
         </div>
-
         <div class="mb-3">
-          <p class="text-xs text-gray-600 mb-1">プレビュー:</p>
-          <span id="badgePreviewChip" class="custom-badge" style="background:#ef4444;">バッジ</span>
+          <p class="text-xs mb-1" style="color: var(--brown-700);">プレビュー:</p>
+          <span id="badgePreviewChip" class="custom-badge" style="background:#7c4a24;">バッジ</span>
         </div>
-
-        <div class="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
-          <p class="text-xs font-bold text-gray-700 mb-2">⚙️ バッジに付与する機能（複数選択可）</p>
+        <div class="mb-3 p-3 rounded" style="background: var(--brown-100); border: 1px solid var(--brown-200);">
+          <p class="text-xs font-bold mb-2" style="color: var(--brown-900);">⚙️ バッジに付与する機能（複数選択可）</p>
           <div class="space-y-1">
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canDeletePost" data-feature="canDeletePost">
-              <span>🗑️ 投稿削除権限（レス削除）</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canDeleteThread" data-feature="canDeleteThread">
-              <span>🧵 スレッド削除権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canBan" data-feature="canBan">
-              <span>🚫 BAN権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canApprove" data-feature="canApprove">
-              <span>🔔 承認権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canPublish" data-feature="canPublish">
-              <span>🌐 公開設定権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canViewEmail" data-feature="canViewEmail">
-              <span>📧 メールアドレス閲覧権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canBackup" data-feature="canBackup">
-              <span>💾 バックアップ・復元権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canManageBadge" data-feature="canManageBadge">
-              <span>🏷️ バッジ管理権限</span>
-            </label>
-            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-              <input type="checkbox" class="badge-feature-checkbox" value="canManageBoard" data-feature="canManageBoard">
-              <span>📋 掲示板管理権限（投稿・削除）</span>
-            </label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canDeletePost" data-feature="canDeletePost"><span>🗑️ 投稿削除権限（レス削除）</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canDeleteThread" data-feature="canDeleteThread"><span>🧵 スレッド削除権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canBan" data-feature="canBan"><span>🚫 BAN権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canApprove" data-feature="canApprove"><span>🔔 承認権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canPublish" data-feature="canPublish"><span>🌐 公開設定権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canViewEmail" data-feature="canViewEmail"><span>📧 メールアドレス閲覧権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canBackup" data-feature="canBackup"><span>💾 バックアップ・復元権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canManageBadge" data-feature="canManageBadge"><span>🏷️ バッジ管理権限</span></label>
+            <label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--brown-900);"><input type="checkbox" class="badge-feature-checkbox" value="canManageBoard" data-feature="canManageBoard"><span>📋 掲示板管理権限（投稿・削除）</span></label>
           </div>
         </div>
-
         <div class="flex justify-end gap-2">
           <button id="badgeEditorCancelBtn" class="reply-cancel-btn">キャンセル</button>
-          <button id="badgeSaveBtn" class="bg-red-800 hover:bg-red-900 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
+          <button id="badgeSaveBtn" class="publish-btn">保存</button>
         </div>
       </div>
       <div class="flex justify-end mt-4">
@@ -1073,104 +498,82 @@
     </div>
   </div>
 
+  <!-- BANモーダル -->
   <div id="banModal" class="modal-backdrop hidden">
     <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">🚫 BANユーザー管理</h3>
-      <p class="text-xs text-gray-500 mb-4">メールアドレスを指定してBANできます（未投稿でも可）。BANはUID・メール・デバイスの3つに紐づきます。</p>
-      <div class="p-3 border border-red-200 bg-red-50 rounded mb-4">
-        <p class="text-xs font-bold text-red-700 mb-2">新規BAN</p>
-        <label class="block text-xs text-gray-600 mb-1">メールアドレス（必須）:</label>
-        <input type="email" id="banEmailInput" placeholder="例: spammer@gmail.com" class="w-full border p-2 rounded text-sm mb-2 font-mono">
-        <label class="block text-xs text-gray-600 mb-1">理由（任意）:</label>
-        <input type="text" id="banReasonInput" placeholder="例: 荒らし" class="w-full border p-2 rounded text-sm mb-2" maxlength="100">
-        <label class="flex items-center gap-2 text-xs text-gray-600 mb-3 cursor-pointer">
-          <input type="checkbox" id="banDeviceCheck" checked>
-          <span>このメールに紐づくデバイスもBANする（フィンガープリント登録）</span>
-        </label>
-        <button id="banAddBtn" class="bg-red-800 hover:bg-red-900 text-white text-xs py-2 px-4 rounded font-bold w-full">このメールアドレスをBANする</button>
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">🚫 BANユーザー管理</h3>
+      <p class="text-xs mb-4" style="color: var(--brown-600);">メールアドレスを指定してBANできます（未投稿でも可）。BANはUID・メール・デバイスの3つに紐づきます。</p>
+      <div class="p-3 rounded mb-4" style="background: #fbeee9; border: 1px solid #e5b4a8;">
+        <p class="text-xs font-bold mb-2" style="color: var(--accent-red);">新規BAN</p>
+        <label class="block text-xs mb-1" style="color: var(--brown-700);">メールアドレス（必須）:</label>
+        <input type="email" id="banEmailInput" placeholder="例: spammer@gmail.com" class="w-full border p-2 rounded text-sm mb-2 font-mono" style="border-color: var(--brown-300); background:#fff;">
+        <label class="block text-xs mb-1" style="color: var(--brown-700);">理由（任意）:</label>
+        <input type="text" id="banReasonInput" placeholder="例: 荒らし" class="w-full border p-2 rounded text-sm mb-2" maxlength="100" style="border-color: var(--brown-300); background:#fff;">
+        <label class="flex items-center gap-2 text-xs mb-3 cursor-pointer" style="color: var(--brown-700);"><input type="checkbox" id="banDeviceCheck" checked><span>このメールに紐づくデバイスもBANする</span></label>
+        <button id="banAddBtn" class="w-full text-xs py-2 px-4 rounded font-bold" style="background: var(--accent-red); color:#fff;">このメールアドレスをBANする</button>
       </div>
       <div>
-        <p class="text-xs font-bold text-gray-600 mb-2">現在BANされているユーザー:</p>
-        <div id="banListContainer">
-          <p class="text-xs text-gray-400">（読み込み中...）</p>
-        </div>
+        <p class="text-xs font-bold mb-2" style="color: var(--brown-800);">現在BANされているユーザー:</p>
+        <div id="banListContainer"><p class="text-xs" style="color: var(--brown-500);">（読み込み中...）</p></div>
       </div>
-      <div class="flex justify-end mt-4">
-        <button id="banCloseBtn" class="reply-cancel-btn">閉じる</button>
-      </div>
+      <div class="flex justify-end mt-4"><button id="banCloseBtn" class="reply-cancel-btn">閉じる</button></div>
     </div>
   </div>
 
+  <!-- ユーザー一覧モーダル -->
   <div id="userModal" class="modal-backdrop hidden">
     <div class="modal-content" style="max-width: 720px;">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">👥 サイトを開いたユーザー一覧</h3>
-      <p class="text-xs text-gray-500 mb-3">ログインしたことがある全ユーザーの一覧です（新しい順）。<br>管理者・主はニックネームを設定できます（一般ユーザーには表示されません）。</p>
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">👥 サイトを開いたユーザー一覧</h3>
+      <p class="text-xs mb-3" style="color: var(--brown-600);">ログインしたことがある全ユーザーの一覧です（新しい順）。<br>管理者・主はニックネームを設定できます（一般ユーザーには表示されません）。</p>
       <input type="text" id="userSearchInput" class="user-search-input" placeholder="🔍 メールアドレスまたはニックネームで検索...">
       <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-        <p class="text-xs text-gray-600">合計: <span id="userCountLabel" class="font-bold">0</span> 人</p>
+        <p class="text-xs" style="color: var(--brown-700);">合計: <span id="userCountLabel" class="font-bold">0</span> 人</p>
         <div class="flex items-center gap-3 flex-wrap">
-          <label class="flex items-center gap-1 text-xs text-gray-600 cursor-pointer">
-            <input type="checkbox" id="userShowOnlyNotBanned">
-            <span>BANされていない人のみ</span>
-          </label>
-          <label class="flex items-center gap-1 text-xs text-gray-600 cursor-pointer">
-            <input type="checkbox" id="userShowOnlyNicknamed">
-            <span>ニックネーム設定済みのみ</span>
-          </label>
+          <label class="flex items-center gap-1 text-xs cursor-pointer" style="color: var(--brown-700);"><input type="checkbox" id="userShowOnlyNotBanned"><span>BANされていない人のみ</span></label>
+          <label class="flex items-center gap-1 text-xs cursor-pointer" style="color: var(--brown-700);"><input type="checkbox" id="userShowOnlyNicknamed"><span>ニックネーム設定済みのみ</span></label>
         </div>
       </div>
-      <div id="userListContainer" style="max-height: 55vh; overflow-y: auto;">
-        <p class="text-xs text-gray-400">（読み込み中...）</p>
-      </div>
-      <div class="flex justify-end mt-4">
-        <button id="userCloseBtn" class="reply-cancel-btn">閉じる</button>
-      </div>
+      <div id="userListContainer" style="max-height: 55vh; overflow-y: auto;"><p class="text-xs" style="color: var(--brown-500);">（読み込み中...）</p></div>
+      <div class="flex justify-end mt-4"><button id="userCloseBtn" class="reply-cancel-btn">閉じる</button></div>
     </div>
   </div>
 
+  <!-- ニックネームモーダル -->
   <div id="nicknameModal" class="modal-backdrop hidden">
     <div class="modal-content" style="max-width: 480px;">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">✏️ ニックネーム設定</h3>
-      <p class="text-xs text-gray-500 mb-4">
-        対象: <span id="nicknameTargetEmail" class="admin-email"></span>
-      </p>
-      <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mb-3">
-        ⚠️ ニックネームは管理者・主のみが閲覧できます。一般ユーザーには表示されません。
-      </p>
-      <label class="block text-xs text-gray-600 mb-1">ニックネーム（最大20文字）:</label>
-      <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 常連さん / 要注意人物"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">✏️ ニックネーム設定</h3>
+      <p class="text-xs mb-4" style="color: var(--brown-600);">対象: <span id="nicknameTargetEmail" class="admin-email"></span></p>
+      <p class="text-xs rounded p-2 mb-3" style="color: var(--brown-800); background: var(--brown-100); border: 1px solid var(--brown-300);">⚠️ ニックネームは管理者・主のみが閲覧できます。一般ユーザーには表示されません。</p>
+      <label class="block text-xs mb-1" style="color: var(--brown-700);">ニックネーム（最大20文字）:</label>
+      <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 常連さん / 要注意人物" class="w-full border p-2 rounded text-sm mb-3" style="border-color: var(--brown-300); background:#fff;">
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="nicknameCancelBtn" class="reply-cancel-btn">キャンセル</button>
         <button id="nicknameDeleteBtn" class="delete-btn">削除</button>
-        <button id="nicknameSaveBtn" class="bg-blue-700 hover:bg-blue-800 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
+        <button id="nicknameSaveBtn" class="publish-btn">保存</button>
       </div>
     </div>
   </div>
 
+  <!-- 承認待ちモーダル -->
   <div id="pendingModal" class="modal-backdrop hidden">
     <div class="modal-content" style="max-width: 640px;">
-      <h3 class="text-lg font-bold text-gray-800 mb-1">🔔 承認待ちユーザー</h3>
-      <p class="text-xs text-gray-500 mb-3">初めてログインしたユーザーです。承認すると利用可能になります。</p>
+      <h3 class="text-lg font-bold mb-1" style="color: var(--brown-950);">🔔 承認待ちユーザー</h3>
+      <p class="text-xs mb-3" style="color: var(--brown-600);">初めてログインしたユーザーです。承認すると利用可能になります。</p>
       <div class="flex items-center justify-between mb-2">
-        <p class="text-xs text-gray-600">承認待ち: <span id="pendingCountLabel" class="font-bold text-red-700">0</span> 人</p>
+        <p class="text-xs" style="color: var(--brown-700);">承認待ち: <span id="pendingCountLabel" class="font-bold" style="color: var(--accent-red);">0</span> 人</p>
       </div>
-      <div id="pendingListContainer" style="max-height: 55vh; overflow-y: auto;">
-        <p class="text-xs text-gray-400">（読み込み中...）</p>
-      </div>
-      <div class="flex justify-end mt-4">
-        <button id="pendingCloseBtn" class="reply-cancel-btn">閉じる</button>
-      </div>
+      <div id="pendingListContainer" style="max-height: 55vh; overflow-y: auto;"><p class="text-xs" style="color: var(--brown-500);">（読み込み中...）</p></div>
+      <div class="flex justify-end mt-4"><button id="pendingCloseBtn" class="reply-cancel-btn">閉じる</button></div>
     </div>
   </div>
 
+  <!-- ログイン画面 -->
   <div id="loginView" class="hidden">
-    <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center">
-      <h1 class="text-3xl font-bold text-red-900 mb-2">掲示板</h1>
-      <p class="text-sm text-gray-600 mb-6">ご利用にはGoogleアカウントでのログインが必要です。</p>
-      <p class="text-sm text-gray-600 mb-6">安全のためです。</p>
-      <button id="googleLoginBtn"
-        class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto transition w-full">
+    <div class="rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center" style="background: var(--brown-50); border: 2px solid var(--brown-300);">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--brown-950);">掲示板</h1>
+      <p class="text-sm mb-6" style="color: var(--brown-700);">ご利用にはGoogleアカウントでのログインが必要です。</p>
+      <p class="text-sm mb-6" style="color: var(--brown-700);">安全のためです。</p>
+      <button id="googleLoginBtn" class="font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto transition w-full" style="background: var(--brown-50); border: 1px solid var(--brown-400); color: var(--brown-900);">
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
           <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
@@ -1179,26 +582,25 @@
         </svg>
         Googleでログイン
       </button>
-      <p class="text-xs text-gray-400 mt-4">※ 投稿は匿名で表示されます</p>
-      <p class="text-xs text-amber-700 mt-2 bg-amber-50 border border-amber-200 rounded p-2">⚠️ 初回ログイン時は管理者の承認が必要です</p>
+      <p class="text-xs mt-4" style="color: var(--brown-500);">※ 投稿は匿名で表示されます</p>
+      <p class="text-xs mt-2 rounded p-2" style="color: var(--brown-800); background: var(--brown-100); border: 1px solid var(--brown-300);">⚠️ 初回ログイン時は管理者の承認が必要です</p>
     </div>
   </div>
 
+  <!-- メイン画面 -->
   <div id="mainView" class="hidden">
-    <header class="border-b-2 border-red-800 pb-2 mb-4 flex justify-between items-center flex-wrap gap-2">
+    <header class="pb-2 mb-4 flex justify-between items-center flex-wrap gap-2" style="border-bottom: 2px solid var(--brown-800);">
       <div>
-        <h1 class="text-3xl font-bold text-red-900 cursor-pointer" onclick="showThreadList()">掲示板</h1>
-        <p class="text-sm text-gray-600 flex flex-wrap items-center gap-2">
-          <span id="connDot" class="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
+        <h1 class="text-3xl font-bold cursor-pointer" onclick="showThreadList()" style="color: var(--brown-900);">掲示板</h1>
+        <p class="text-sm flex flex-wrap items-center gap-2" style="color: var(--brown-700);">
+          <span id="connDot" class="inline-block w-2 h-2 rounded-full" style="background: var(--brown-500);"></span>
           <span id="connText">接続中...</span>
           <span id="roleBadgeContainer"></span>
           <label id="badgeToggleWrap" class="badge-toggle-wrap hidden" title="自分の投稿に付くバッジを他の人に見せるかどうか">
-            <input type="checkbox" id="badgeToggle" checked>
-            <span>バッジを他の人に見せる</span>
+            <input type="checkbox" id="badgeToggle" checked><span>バッジを他の人に見せる</span>
           </label>
           <label id="emailToggleWrap" class="badge-toggle-wrap hidden" title="投稿者のメールアドレスを表示するかどうか">
-            <input type="checkbox" id="emailToggle" checked>
-            <span>メールアドレスを表示</span>
+            <input type="checkbox" id="emailToggle" checked><span>メールアドレスを表示</span>
           </label>
         </p>
       </div>
@@ -1215,127 +617,105 @@
           <input type="file" id="restoreInput" accept="application/json,.json" class="hidden">
         </div>
         <button id="boardBtn" class="board-publish-btn" onclick="showBoardView()">📋 掲示板</button>
-        <span id="userEmail" class="text-xs text-gray-500 hidden"></span>
-        <button id="logoutBtn" onclick="doLogout()" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded transition shadow">ログアウト</button>
-        <button id="backToListBtn" onclick="showThreadList()" class="hidden bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded transition shadow">← スレッド一覧に戻る</button>
+        <span id="userEmail" class="text-xs hidden" style="color: var(--brown-600);"></span>
+        <button id="logoutBtn" onclick="doLogout()" class="text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-500); color:#fff;">ログアウト</button>
+        <button id="backToListBtn" onclick="showThreadList()" class="hidden text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← スレッド一覧に戻る</button>
       </div>
     </header>
 
     <div id="threadListView">
-      <section class="bg-amber-50 border border-amber-200 p-4 rounded mb-6 shadow-sm">
-        <h2 class="text-lg font-bold text-gray-700 mb-2">新規スレッド作成</h2>
+      <section class="p-4 rounded mb-6 shadow-sm" style="background: var(--brown-100); border: 1px solid var(--brown-300);">
+        <h2 class="text-lg font-bold mb-2" style="color: var(--brown-900);">新規スレッド作成</h2>
         <form id="createThreadForm" class="space-y-3">
-          <input type="text" id="threadTitle" placeholder="スレッドのタイトルを入力（必須）" maxlength="100" class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-red-300 focus:border-red-400 outline-none" required>
-          <textarea id="firstPostContent" rows="3" placeholder="最初の書き込み内容（任意）" maxlength="2000" class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-red-300 focus:border-red-400 outline-none"></textarea>
+          <input type="text" id="threadTitle" placeholder="スレッドのタイトルを入力（必須）" maxlength="100" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;" required>
+          <textarea id="firstPostContent" rows="3" placeholder="最初の書き込み内容（任意）" maxlength="2000" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
           <div>
-            <label class="block text-xs text-gray-600 mb-1">画像を添付（自動リサイズ・最大200KB、任意）:</label>
-            <input type="file" id="threadFileInput" accept="image/*" class="text-xs text-gray-600 w-full">
-            <div class="preview-box" id="threadPreviewBox">
-              <img id="threadPreviewImg" alt="プレビュー">
-              <div class="preview-info" id="threadPreviewInfo"></div>
-            </div>
+            <label class="block text-xs mb-1" style="color: var(--brown-700);">画像を添付（自動リサイズ・最大200KB、任意）:</label>
+            <input type="file" id="threadFileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
+            <div class="preview-box" id="threadPreviewBox"><img id="threadPreviewImg" alt="プレビュー"><div class="preview-info" id="threadPreviewInfo"></div></div>
           </div>
-          <button type="submit" id="createThreadBtn" class="bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-6 rounded text-sm transition shadow-sm">スレッドを立てる</button>
+          <button type="submit" id="createThreadBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm" style="background: var(--brown-800); color:#fff;">スレッドを立てる</button>
         </form>
       </section>
 
       <main>
         <div class="thread-list-header">
-          <h2 class="text-xl font-bold text-gray-700 flex items-center gap-2">
-            スレッド一覧
-            <span id="unreadCountLabel" class="unread-count-badge hidden">0</span>
-          </h2>
-          <label class="unread-only-wrap" id="unreadOnlyWrap" title="まだ開いていないスレッドだけを表示します">
-            <input type="checkbox" id="unreadOnlyCheck">
-            <span>🆕 新着のみ表示</span>
-          </label>
+          <h2 class="text-xl font-bold flex items-center gap-2" style="color: var(--brown-900);">スレッド一覧 <span id="unreadCountLabel" class="unread-count-badge hidden">0</span></h2>
+          <label class="unread-only-wrap" id="unreadOnlyWrap" title="まだ開いていないスレッドだけを表示します"><input type="checkbox" id="unreadOnlyCheck"><span>🆕 新着のみ表示</span></label>
         </div>
         <div id="threadsContainer" class="space-y-2 threads-scroll pr-1">
-          <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> スレッドを読み込み中...</p>
+          <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> スレッドを読み込み中...</p>
         </div>
       </main>
     </div>
 
     <div id="threadDetailView" class="hidden">
-      <div class="bg-white p-4 border border-gray-300 rounded mb-4 shadow-sm flex justify-between items-start gap-3 flex-wrap">
+      <div class="p-4 rounded mb-4 shadow-sm flex justify-between items-start gap-3 flex-wrap" style="background: var(--brown-50); border: 1px solid var(--brown-300);">
         <div class="flex-1 min-w-0">
-          <h2 id="currentThreadTitle" class="text-2xl font-bold text-red-900 mb-1 break-words"></h2>
-          <p id="currentThreadDate" class="text-xs text-gray-500"></p>
-          <p id="currentThreadAuthor" class="text-xs text-gray-500 mt-1"></p>
+          <h2 id="currentThreadTitle" class="text-2xl font-bold mb-1 break-words" style="color: var(--brown-900);"></h2>
+          <p id="currentThreadDate" class="text-xs" style="color: var(--brown-600);"></p>
+          <p id="currentThreadAuthor" class="text-xs mt-1" style="color: var(--brown-600);"></p>
         </div>
         <button id="deleteThreadBtn" class="delete-btn hidden" onclick="deleteCurrentThread()">スレッドを削除</button>
       </div>
 
-      <section class="bg-amber-50 border border-amber-200 p-4 rounded mb-6 shadow-sm">
-        <h3 class="text-md font-bold text-gray-700 mb-2">このスレッドに書き込む</h3>
+      <section class="p-4 rounded mb-6 shadow-sm" style="background: var(--brown-100); border: 1px solid var(--brown-300);">
+        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">このスレッドに書き込む</h3>
         <form id="postForm" class="space-y-3">
-          <textarea id="postContent" rows="4" placeholder="コメントを入力してください。URLは自動でリンク化されます。" maxlength="2000" class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-red-300 focus:border-red-400 outline-none"></textarea>
+          <textarea id="postContent" rows="4" placeholder="コメントを入力してください。URLは自動でリンク化されます。" maxlength="2000" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div class="flex-1 min-w-[200px]">
-              <label class="block text-xs text-gray-600 mb-1">画像を添付（自動リサイズ・最大200KB）:</label>
-              <input type="file" id="fileInput" accept="image/*" class="text-xs text-gray-600 w-full">
-              <div class="preview-box" id="postPreviewBox">
-                <img id="postPreviewImg" alt="プレビュー">
-                <div class="preview-info" id="postPreviewInfo"></div>
-              </div>
+              <label class="block text-xs mb-1" style="color: var(--brown-700);">画像を添付（自動リサイズ・最大200KB）:</label>
+              <input type="file" id="fileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
+              <div class="preview-box" id="postPreviewBox"><img id="postPreviewImg" alt="プレビュー"><div class="preview-info" id="postPreviewInfo"></div></div>
             </div>
-            <button type="submit" id="submitBtn" class="bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-6 rounded text-sm transition shadow-sm whitespace-nowrap">書き込む</button>
+            <button type="submit" id="submitBtn" class="font-bold py-2 px-6 rounded text-sm transition shadow-sm whitespace-nowrap" style="background: var(--brown-800); color:#fff;">書き込む</button>
           </div>
         </form>
       </section>
 
       <main>
-        <h3 class="text-lg font-bold border-b pb-1 mb-4 text-gray-700">レス一覧</h3>
+        <h3 class="text-lg font-bold pb-1 mb-4" style="color: var(--brown-900); border-bottom: 1px solid var(--brown-300);">レス一覧</h3>
         <div id="postsContainer" class="post-tree">
-          <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> 読み込み中...</p>
+          <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> 読み込み中...</p>
         </div>
       </main>
     </div>
 
     <div id="boardView" class="hidden">
-      <div class="flex justify-between items-center border-b pb-2 mb-4">
-        <h2 class="text-xl font-bold text-gray-700">📋 掲示板</h2>
-        <button onclick="showThreadList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded transition shadow">← スレッド一覧に戻る</button>
+      <div class="flex justify-between items-center pb-2 mb-4" style="border-bottom: 1px solid var(--brown-300);">
+        <h2 class="text-xl font-bold" style="color: var(--brown-900);">📋 掲示板</h2>
+        <button onclick="showThreadList()" class="text-xs py-1.5 px-3 rounded transition shadow" style="background: var(--brown-600); color:#fff;">← スレッド一覧に戻る</button>
       </div>
-
-      <div id="boardReadonlyNote" class="board-readonly-note hidden">
-        📖 掲示板は閲覧のみ可能です。投稿・編集は管理者または主、および掲示板管理権限を持つユーザーのみ行えます。
-      </div>
-
+      <div id="boardReadonlyNote" class="board-readonly-note hidden">📖 掲示板は閲覧のみ可能です。投稿・編集は管理者または主、および掲示板管理権限を持つユーザーのみ行えます。</div>
       <div id="boardFormWrapper" class="board-form-box">
-        <h3 class="text-md font-bold text-gray-700 mb-2">✏️ 新しいお知らせ・イベント投稿</h3>
+        <h3 class="text-md font-bold mb-2" style="color: var(--brown-900);">✏️ 新しいお知らせ・イベント投稿</h3>
         <form id="boardForm" class="space-y-3">
           <div>
-            <label class="block text-xs text-gray-600 mb-1">タイトル（必須）:</label>
-            <input type="text" id="boardTitle" maxlength="100" placeholder="例: 夏休みイベントのお知らせ" class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-amber-300 outline-none" required>
+            <label class="block text-xs mb-1" style="color: var(--brown-700);">タイトル（必須）:</label>
+            <input type="text" id="boardTitle" maxlength="100" placeholder="例: 夏休みイベントのお知らせ" class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;" required>
           </div>
           <div>
-            <label class="block text-xs text-gray-600 mb-1">本文（任意）:</label>
-            <textarea id="boardContent" rows="4" maxlength="3000" placeholder="イベントの詳細などを入力..." class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-amber-300 outline-none"></textarea>
+            <label class="block text-xs mb-1" style="color: var(--brown-700);">本文（任意）:</label>
+            <textarea id="boardContent" rows="4" maxlength="3000" placeholder="イベントの詳細などを入力..." class="w-full border p-2 rounded text-sm outline-none" style="border-color: var(--brown-300); background:#fff;"></textarea>
           </div>
           <div>
-            <label class="block text-xs text-gray-600 mb-1">画像を添付（任意・自動リサイズ）:</label>
-            <input type="file" id="boardFileInput" accept="image/*" class="text-xs text-gray-600 w-full">
-            <div class="preview-box" id="boardPreviewBox">
-              <img id="boardPreviewImg" alt="プレビュー">
-              <div class="preview-info" id="boardPreviewInfo"></div>
-            </div>
+            <label class="block text-xs mb-1" style="color: var(--brown-700);">画像を添付（任意・自動リサイズ）:</label>
+            <input type="file" id="boardFileInput" accept="image/*" class="text-xs w-full" style="color: var(--brown-700);">
+            <div class="preview-box" id="boardPreviewBox"><img id="boardPreviewImg" alt="プレビュー"><div class="preview-info" id="boardPreviewInfo"></div></div>
           </div>
           <button type="submit" id="boardSubmitBtn" class="board-publish-btn">📢 掲示板に投稿する</button>
         </form>
       </div>
-
       <div id="boardListContainer">
-        <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> 掲示板を読み込み中...</p>
+        <p class="text-sm" style="color: var(--brown-600);"><span class="loading-spinner"></span> 掲示板を読み込み中...</p>
       </div>
     </div>
 
   </div>
 
 <script type="module">
-  /* =========================================================
-     Firebase imports（モジュラーSDK v13.3.0）
-     ========================================================= */
+  /* ===== Firebase imports ===== */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-analytics.js";
   import {
@@ -1346,9 +726,6 @@
     signInWithPopup, signOut, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
 
-  /* =========================================================
-     Firebase 初期化
-     ========================================================= */
   const firebaseConfig = {
     apiKey: "AIzaSyDHDqOEcmXgi6j6I3OyYa1J7ykn10iCm8w",
     authDomain: "acorn-news-a4d0c.firebaseapp.com",
@@ -1366,22 +743,14 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // 起動時の保険：JSエラーが出たら bootOverlay を消す
   window.addEventListener('error', (e) => {
     console.error('JSエラー:', e.message);
-    const boot = document.getElementById('bootOverlay');
-    if (boot) boot.classList.add('hidden');
-    const login = document.getElementById('loginView');
-    if (login) login.classList.remove('hidden');
+    document.getElementById('bootOverlay')?.classList.add('hidden');
+    document.getElementById('loginView')?.classList.remove('hidden');
   });
 
-  setPersistence(auth, browserLocalPersistence).catch((err) => {
-    console.warn('永続化設定失敗:', err);
-  });
+  setPersistence(auth, browserLocalPersistence).catch((err) => console.warn('永続化設定失敗:', err));
 
-  /* =========================================================
-     定数
-     ========================================================= */
   const ROLE_ADMIN_EMAIL = "katou.noel114514@gmail.com";
   const ROLE_OWNER_EMAIL = "18107@v.nakijin.ed.jp";
   const ROLE_VIP_EMAILS = [
@@ -1394,121 +763,56 @@
   const IMAGE_QUALITY = 0.75;
   const IMAGE_MAX_BASE64_SIZE = 200 * 1024;
 
-  /* =========================================================
-     状態
-     ========================================================= */
-  let currentUser = null;
-  let userRole = null;
-  let currentThreadKey = null;
-  let currentThreadOwnerUid = null;
-  let postsUnsubscribe = null;
-  let threadsUnsubscribe = null;
-  let badgesUnsubscribe = null;
-  let bansUnsubscribe = null;
-  let deviceBansUnsubscribe = null;
-  let knownUsersUnsubscribe = null;
-  let pendingUnsubscribe = null;
-  let approvedUnsubscribe = null;
-  let selfApprovalUnsubscribe = null;
-  let siteStatusUnsubscribe = null;
-  let boardUnsubscribe = null;
-  let nicknamesUnsubscribe = null;
+  let currentUser = null, userRole = null;
+  let currentThreadKey = null, currentThreadOwnerUid = null;
+  let postsUnsubscribe = null, threadsUnsubscribe = null, badgesUnsubscribe = null;
+  let bansUnsubscribe = null, deviceBansUnsubscribe = null, knownUsersUnsubscribe = null;
+  let pendingUnsubscribe = null, approvedUnsubscribe = null, selfApprovalUnsubscribe = null;
+  let siteStatusUnsubscribe = null, boardUnsubscribe = null, nicknamesUnsubscribe = null;
   let badgeFeatureUnsubscribe = null;
-
   let activeReplyParentId = null;
-  let allPostsCache = [];
-  let postNumberMap = new Map();
-
-  let customBadgesCache = {};
-  let bansCache = {};
-  let deviceBansCache = {};
-  let knownUsersCache = {};
-  let pendingCache = {};
-  let approvedCache = {};
+  let allPostsCache = [], postNumberMap = new Map();
+  let customBadgesCache = {}, bansCache = {}, deviceBansCache = {}, knownUsersCache = {};
+  let pendingCache = {}, approvedCache = {};
   let siteStatusCache = { published: true, messageUrl: '', lockdown: false, alarm: false, alarmReason: '', alarmBy: '' };
-  let myFingerprint = null;
-  let nicknamesCache = {};
-
-  let badgeEditingTarget = null;
-  let badgeEditingBadgeId = null;
-
-  let myBadgePublic = true;
-  let myEmailVisible = true;
-
-  let intentionalSignOut = false;
-  let userApproved = false;
-
-  let initialAuthCheckDone = false;
-
-  let boardCache = {};
-
-  let badgeFeaturePermissions = {};
-
+  let myFingerprint = null, nicknamesCache = {};
+  let badgeEditingTarget = null, badgeEditingBadgeId = null;
+  let myBadgePublic = true, myEmailVisible = true;
+  let intentionalSignOut = false, userApproved = false, initialAuthCheckDone = false;
+  let boardCache = {}, badgeFeaturePermissions = {};
   let lockdownEnforcerInterval = null;
-
-  // 新着管理
-  let readThreadsCache = {};
-  let allThreadsCache = [];
-  let unreadOnlyFilter = false;
-
+  let readThreadsCache = {}, allThreadsCache = [], unreadOnlyFilter = false;
   let bannerTimer = null;
 
-  /* =========================================================
-     既読管理
-     ========================================================= */
-  function readStorageKey(email) {
-    return 'readThreads_' + (email || 'anonymous');
-  }
+  /* 既読管理 */
+  function readStorageKey(email) { return 'readThreads_' + (email || 'anonymous'); }
   function loadReadThreads(email) {
-    try {
-      const raw = localStorage.getItem(readStorageKey(email));
-      if (!raw) return {};
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') return parsed;
-      return {};
-    } catch (e) {
-      console.warn('既読情報読み込み失敗:', e.message);
-      return {};
-    }
+    try { const raw = localStorage.getItem(readStorageKey(email)); if (!raw) return {};
+      const parsed = JSON.parse(raw); return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) { return {}; }
   }
-  function saveReadThreads(email, obj) {
-    try {
-      localStorage.setItem(readStorageKey(email), JSON.stringify(obj || {}));
-    } catch (e) {
-      console.warn('既読情報保存失敗:', e.message);
-    }
-  }
+  function saveReadThreads(email, obj) { try { localStorage.setItem(readStorageKey(email), JSON.stringify(obj || {})); } catch (e) {} }
   function markThreadAsRead(threadKey) {
     if (!threadKey) return;
     readThreadsCache[threadKey] = Date.now();
     if (currentUser) saveReadThreads(currentUser.email, readThreadsCache);
-    if (threadListView && !threadListView.classList.contains('hidden')) {
-      renderThreadsList();
-    }
+    if (threadListView && !threadListView.classList.contains('hidden')) renderThreadsList();
     updateUnreadCountLabel();
   }
   function isThreadUnread(thread) {
     if (!thread || !thread.key) return false;
     const lastRead = readThreadsCache[thread.key];
     if (!lastRead) return true;
-    const lastActivity = thread.lastActivityAt || thread.createdAt || 0;
-    return lastActivity > lastRead;
+    return (thread.lastActivityAt || thread.createdAt || 0) > lastRead;
   }
   function getUnreadPostCount(thread) {
     if (!thread || !thread.posts) return 0;
     const lastRead = readThreadsCache[thread.key];
-    if (!lastRead) {
-      let cnt = 0;
-      Object.values(thread.posts).forEach(p => {
-        if (p && p.authorUid !== (currentUser && currentUser.uid)) cnt++;
-      });
-      return cnt;
-    }
     let cnt = 0;
     Object.values(thread.posts).forEach(p => {
       if (!p) return;
       if (p.authorUid === (currentUser && currentUser.uid)) return;
-      if ((p.createdAt || 0) > lastRead) cnt++;
+      if (!lastRead || (p.createdAt || 0) > lastRead) cnt++;
     });
     return cnt;
   }
@@ -1516,17 +820,11 @@
     const label = document.getElementById('unreadCountLabel');
     if (!label) return;
     const unreadCount = allThreadsCache.filter(t => isThreadUnread(t)).length;
-    if (unreadCount > 0) {
-      label.textContent = unreadCount;
-      label.classList.remove('hidden');
-    } else {
-      label.classList.add('hidden');
-    }
+    if (unreadCount > 0) { label.textContent = unreadCount; label.classList.remove('hidden'); }
+    else label.classList.add('hidden');
   }
 
-  /* =========================================================
-     DOM キャッシュ
-     ========================================================= */
+  /* DOM キャッシュ */
   const loginView = document.getElementById('loginView');
   const mainView = document.getElementById('mainView');
   const threadListView = document.getElementById('threadListView');
@@ -1557,64 +855,28 @@
   const alarmToastReason = document.getElementById('alarmToastReason');
   const alarmToastIssuer = document.getElementById('alarmToastIssuer');
 
-  /* =========================================================
-     権限ヘルパー
-     ========================================================= */
-  function canDelete() {
-    return userRole === 'admin' || userRole === 'owner' || userRole === 'vip';
-  }
-  function canBackup() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canBackup');
-  }
-  function canViewEmail() {
-    if (!canToggleEmailVisibility()) return false;
-    return myEmailVisible === true;
-  }
-  function canToggleEmailVisibility() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canViewEmail');
-  }
-  function canManageBadge() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canManageBadge');
-  }
-  function canBan() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canBan');
-  }
-  function canApprove() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canApprove');
-  }
-  function canPublish() {
-    if (userRole === 'admin' || userRole === 'owner') return true;
-    return canDo('canPublish');
-  }
+  /* 権限 */
+  function canDelete() { return userRole === 'admin' || userRole === 'owner' || userRole === 'vip'; }
+  function canBackup() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canBackup'); }
+  function canViewEmail() { if (!canToggleEmailVisibility()) return false; return myEmailVisible === true; }
+  function canToggleEmailVisibility() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canViewEmail'); }
+  function canManageBadge() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canManageBadge'); }
+  function canBan() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canBan'); }
+  function canApprove() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canApprove'); }
+  function canPublish() { if (userRole === 'admin' || userRole === 'owner') return true; return canDo('canPublish'); }
   function canManageBoard() {
     if (userRole === 'admin' || userRole === 'owner') return true;
     if (currentUser && currentUser.uid && hasBadgeFeature(currentUser.uid, 'canManageBoard')) return true;
     return false;
   }
-  function canSetNickname() {
-    return userRole === 'admin' || userRole === 'owner';
-  }
-  function canLockdown() {
-    return userRole === 'admin' || userRole === 'owner';
-  }
-  function canAlarm() {
-    return userRole === 'admin' || userRole === 'owner';
-  }
-  function hasBadgeFeature(uid, feature) {
-    if (!uid || !feature) return false;
-    return !!(badgeFeaturePermissions[uid] && badgeFeaturePermissions[uid][feature]);
-  }
+  function canSetNickname() { return userRole === 'admin' || userRole === 'owner'; }
+  function canLockdown() { return userRole === 'admin' || userRole === 'owner'; }
+  function canAlarm() { return userRole === 'admin' || userRole === 'owner'; }
+  function hasBadgeFeature(uid, feature) { if (!uid || !feature) return false; return !!(badgeFeaturePermissions[uid] && badgeFeaturePermissions[uid][feature]); }
   function canDo(feature) {
     if (userRole === 'admin' || userRole === 'owner') return true;
     if (userRole === 'vip' && (feature === 'canDeletePost' || feature === 'canDeleteThread')) return true;
-    if (currentUser && currentUser.uid) {
-      if (hasBadgeFeature(currentUser.uid, feature)) return true;
-    }
+    if (currentUser && currentUser.uid && hasBadgeFeature(currentUser.uid, feature)) return true;
     return false;
   }
   function isProtectedEmail(email) {
@@ -1624,19 +886,15 @@
   }
   function getRoleByUid(uid) {
     if (knownUsersCache[uid] && knownUsersCache[uid].role) return knownUsersCache[uid].role;
-    if (approvedCache[uid] && approvedCache[uid].email) {
-      return roleFromEmail(approvedCache[uid].email);
-    }
+    if (approvedCache[uid] && approvedCache[uid].email) return roleFromEmail(approvedCache[uid].email);
     return null;
   }
   function isProtectedUid(uid) {
     if (!uid) return false;
     const r = getRoleByUid(uid);
     if (r === 'admin' || r === 'owner') return true;
-    const u1 = knownUsersCache[uid];
-    if (u1 && u1.email && isProtectedEmail(u1.email)) return true;
-    const u2 = approvedCache[uid];
-    if (u2 && u2.email && isProtectedEmail(u2.email)) return true;
+    const u1 = knownUsersCache[uid]; if (u1 && u1.email && isProtectedEmail(u1.email)) return true;
+    const u2 = approvedCache[uid]; if (u2 && u2.email && isProtectedEmail(u2.email)) return true;
     return false;
   }
   function isCurrentUserProtected() {
@@ -1653,33 +911,20 @@
     return null;
   }
 
-  /* =========================================================
-     ユーティリティ
-     ========================================================= */
+  /* ユーティリティ */
   function generateFingerprint() {
-    const parts = [
-      navigator.userAgent,
-      navigator.language,
-      (navigator.languages || []).join(','),
-      screen.width + 'x' + screen.height,
-      screen.colorDepth,
-      new Date().getTimezoneOffset(),
-      navigator.platform || '',
-      navigator.hardwareConcurrency || '',
-      navigator.deviceMemory || '',
-      navigator.maxTouchPoints || 0
-    ];
+    const parts = [navigator.userAgent, navigator.language, (navigator.languages || []).join(','),
+      screen.width + 'x' + screen.height, screen.colorDepth, new Date().getTimezoneOffset(),
+      navigator.platform || '', navigator.hardwareConcurrency || '', navigator.deviceMemory || '', navigator.maxTouchPoints || 0];
     const raw = parts.join('|');
     function hash(str) {
-      let h1 = 0x811c9dc5;
-      let h2 = 0xcbf29ce4;
+      let h1 = 0x811c9dc5, h2 = 0xcbf29ce4;
       for (let i = 0; i < str.length; i++) {
         const c = str.charCodeAt(i);
         h1 ^= c; h1 = Math.imul(h1, 0x01000193);
         h2 ^= c; h2 = Math.imul(h2, 0x01000193);
       }
-      return (h1 >>> 0).toString(16).padStart(8, '0') +
-             (h2 >>> 0).toString(16).padStart(8, '0');
+      return (h1 >>> 0).toString(16).padStart(8, '0') + (h2 >>> 0).toString(16).padStart(8, '0');
     }
     return 'fp_' + hash(raw);
   }
@@ -1687,32 +932,15 @@
     if (!email) return '';
     const lower = email.toLowerCase().trim();
     let h1 = 0x811c9dc5;
-    for (let i = 0; i < lower.length; i++) {
-      h1 ^= lower.charCodeAt(i);
-      h1 = Math.imul(h1, 0x01000193);
-    }
+    for (let i = 0; i < lower.length; i++) { h1 ^= lower.charCodeAt(i); h1 = Math.imul(h1, 0x01000193); }
     return 'em_' + (h1 >>> 0).toString(16).padStart(8, '0');
   }
-  function badgeStorageKey(email) {
-    return 'badgeVisible_' + (email || 'anonymous');
-  }
-  function loadBadgeVisibility(email) {
-    const v = localStorage.getItem(badgeStorageKey(email));
-    return v === null ? true : v === 'true';
-  }
-  function saveBadgeVisibility(email, visible) {
-    localStorage.setItem(badgeStorageKey(email), visible ? 'true' : 'false');
-  }
-  function emailStorageKey(email) {
-    return 'emailVisible_' + (email || 'anonymous');
-  }
-  function loadEmailVisibility(email) {
-    const v = localStorage.getItem(emailStorageKey(email));
-    return v === null ? true : v === 'true';
-  }
-  function saveEmailVisibility(email, visible) {
-    localStorage.setItem(emailStorageKey(email), visible ? 'true' : 'false');
-  }
+  function badgeStorageKey(email) { return 'badgeVisible_' + (email || 'anonymous'); }
+  function loadBadgeVisibility(email) { const v = localStorage.getItem(badgeStorageKey(email)); return v === null ? true : v === 'true'; }
+  function saveBadgeVisibility(email, visible) { localStorage.setItem(badgeStorageKey(email), visible ? 'true' : 'false'); }
+  function emailStorageKey(email) { return 'emailVisible_' + (email || 'anonymous'); }
+  function loadEmailVisibility(email) { const v = localStorage.getItem(emailStorageKey(email)); return v === null ? true : v === 'true'; }
+  function saveEmailVisibility(email, visible) { localStorage.setItem(emailStorageKey(email), visible ? 'true' : 'false'); }
   function renderRoleBadge(role) {
     roleBadgeContainer.innerHTML = '';
     if (role === 'admin') roleBadgeContainer.innerHTML = '<span class="admin-badge">管理者</span>';
@@ -1720,38 +948,27 @@
     else if (role === 'vip') roleBadgeContainer.innerHTML = '<span class="vip-badge">VIP</span>';
   }
   function setConnection(online) {
-    if (online) {
-      connDot.className = 'inline-block w-2 h-2 rounded-full bg-green-500';
-      connText.textContent = 'オンライン（リアルタイム同期中）';
-    } else {
-      connDot.className = 'inline-block w-2 h-2 rounded-full bg-red-500';
-      connText.textContent = 'オフライン';
-    }
+    if (online) { connDot.style.background = '#16a34a'; connText.textContent = 'オンライン（リアルタイム同期中）'; }
+    else { connDot.style.background = '#dc2626'; connText.textContent = 'オフライン'; }
   }
   function showBanner(msg, isError = true) {
     statusBanner.textContent = msg;
-    statusBanner.className = (isError ? 'bg-red-600' : 'bg-green-600') + ' text-white show';
-    statusBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;padding:6px;font-size:12px;transform:translateY(0);';
+    statusBanner.style.background = isError ? 'var(--accent-red)' : 'var(--brown-800)';
+    statusBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;padding:6px;font-size:12px;transform:translateY(0);color:#fff;background:' + (isError ? 'var(--accent-red)' : 'var(--brown-800)');
     clearTimeout(bannerTimer);
-    bannerTimer = setTimeout(() => {
-      statusBanner.style.transform = 'translateY(-100%)';
-    }, 4000);
+    bannerTimer = setTimeout(() => { statusBanner.style.transform = 'translateY(-100%)'; }, 4000);
   }
   window.addEventListener('online', () => setConnection(true));
   window.addEventListener('offline', () => setConnection(false));
 
   function escapeHtml(str) {
     if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
   function formatContent(str) {
     if (!str) return '';
     const escaped = escapeHtml(str);
-    const urlRegex = /(https?:\/\/[^\s<]+)/g;
-    return escaped.replace(urlRegex, (url) =>
-      `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline break-all">${url}</a>`);
+    return escaped.replace(/(https?:\/\/[^\s<]+)/g, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--brown-800);text-decoration:underline;word-break:break-all;">${url}</a>`);
   }
   function formatSize(bytes) {
     if (!bytes) return '';
@@ -1759,54 +976,28 @@
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / 1024 / 1024).toFixed(2) + ' MB';
   }
+  function showMainView() { loginView.classList.add('hidden'); mainView.classList.remove('hidden'); }
+  function showLoginView() { loginView.classList.remove('hidden'); mainView.classList.add('hidden'); }
+  function hideBootOverlay() { bootOverlay.classList.add('hidden'); }
 
-  function showMainView() {
-    loginView.classList.add('hidden');
-    mainView.classList.remove('hidden');
-  }
-  function showLoginView() {
-    loginView.classList.remove('hidden');
-    mainView.classList.add('hidden');
-  }
-  function hideBootOverlay() {
-    bootOverlay.classList.add('hidden');
-  }
-
-  /* =========================================================
-     オーバーレイ制御
-     ========================================================= */
+  /* オーバーレイ */
   function forceExit(msg, sub, showSwitchButton) {
     banOverlayMsg.textContent = msg || 'アクセスが拒否されました';
     banOverlaySub.innerHTML = sub || '';
     banOverlayActions.style.display = showSwitchButton ? 'flex' : 'none';
     banOverlay.classList.add('show');
-    document.body.style.background = '#000';
+    document.body.style.background = 'var(--brown-950)';
     try { window.open('', '_self').close(); } catch (e) {}
     try { window.close(); } catch (e) {}
     setTimeout(() => { try { window.location.replace('about:blank'); } catch (e) {} }, 200);
-    setInterval(() => {
-      try { window.open('', '_self').close(); } catch (e) {}
-      try { window.close(); } catch (e) {}
-    }, 800);
-    setInterval(() => {
-      banOverlay.classList.add('show');
-      document.body.style.background = '#000';
-    }, 300);
+    setInterval(() => { try { window.open('', '_self').close(); } catch (e) {} try { window.close(); } catch (e) {} }, 800);
+    setInterval(() => { banOverlay.classList.add('show'); document.body.style.background = 'var(--brown-950)'; }, 300);
   }
   function executeBan() {
-    forceExit(
-      'アクセスが拒否されました',
-      'このアカウントはBANされています。<br>別のGoogleアカウントでログインしてください。',
-      true
-    );
+    forceExit('アクセスが拒否されました', 'このアカウントはBANされています。<br>別のGoogleアカウントでログインしてください。', true);
   }
   function executePending() {
-    forceExit(
-      '承認待ちです',
-      '管理者または主による承認をお待ちください。<br>承認されたら、またサイトを開いてください。<br><br>' +
-      '<small style="color:#9ca3af;">このウィンドウは自動的に閉じられます。</small>',
-      true
-    );
+    forceExit('承認待ちです', '管理者または主による承認をお待ちください。<br>承認されたら、またサイトを開いてください。<br><br><small style="color:var(--brown-400);">このウィンドウは自動的に閉じられます。</small>', true);
   }
   function executeLockdown() {
     try { window.open('', '_self').close(); } catch (e) {}
@@ -1816,40 +1007,25 @@
     banOverlaySub.innerHTML = '現在このサイトは緊急ロックダウン中です。<br>管理者または主による解除をお待ちください。';
     banOverlayActions.style.display = 'none';
     banOverlay.classList.add('show');
-    document.body.style.background = '#000';
+    document.body.style.background = 'var(--brown-950)';
     if (lockdownEnforcerInterval) clearInterval(lockdownEnforcerInterval);
     lockdownEnforcerInterval = setInterval(() => {
-      if (!siteStatusCache || siteStatusCache.lockdown !== true) {
-        clearInterval(lockdownEnforcerInterval);
-        lockdownEnforcerInterval = null;
-        return;
-      }
+      if (!siteStatusCache || siteStatusCache.lockdown !== true) { clearInterval(lockdownEnforcerInterval); lockdownEnforcerInterval = null; return; }
       try { window.open('', '_self').close(); } catch (e) {}
       try { window.close(); } catch (e) {}
       try { window.location.replace('about:blank'); } catch (e) {}
       banOverlay.classList.add('show');
-      document.body.style.background = '#000';
+      document.body.style.background = 'var(--brown-950)';
     }, 500);
   }
-  function stopLockdownEnforcer() {
-    if (lockdownEnforcerInterval) {
-      clearInterval(lockdownEnforcerInterval);
-      lockdownEnforcerInterval = null;
-    }
-  }
+  function stopLockdownEnforcer() { if (lockdownEnforcerInterval) { clearInterval(lockdownEnforcerInterval); lockdownEnforcerInterval = null; } }
   function checkAndApplyLockdown() {
     if (isCurrentUserProtected()) { stopLockdownEnforcer(); return false; }
-    if (siteStatusCache && siteStatusCache.lockdown === true) {
-      executeLockdown();
-      return true;
-    }
+    if (siteStatusCache && siteStatusCache.lockdown === true) { executeLockdown(); return true; }
     return false;
   }
   function showAlarmToast() {
-    if (!siteStatusCache || siteStatusCache.alarm !== true) {
-      alarmToast.classList.remove('show');
-      return;
-    }
+    if (!siteStatusCache || siteStatusCache.alarm !== true) { alarmToast.classList.remove('show'); return; }
     alarmToastReason.textContent = siteStatusCache.alarmReason || '緊急対応';
     alarmToastIssuer.textContent = siteStatusCache.alarmBy || '管理者';
     alarmToast.classList.add('show');
@@ -1857,50 +1033,28 @@
   function hideAlarmToast() { alarmToast.classList.remove('show'); }
   function checkAndApplyAlarm() {
     if (isCurrentUserProtected()) { hideAlarmToast(); return false; }
-    if (siteStatusCache && siteStatusCache.alarm === true) {
-      showAlarmToast();
-      return true;
-    }
-    hideAlarmToast();
-    return false;
+    if (siteStatusCache && siteStatusCache.alarm === true) { showAlarmToast(); return true; }
+    hideAlarmToast(); return false;
   }
   function showUnpublishedOverlay() {
-    if (!siteStatusCache || siteStatusCache.published !== false) {
-      unpublishedOverlay.classList.remove('show');
-      return;
-    }
+    if (!siteStatusCache || siteStatusCache.published !== false) { unpublishedOverlay.classList.remove('show'); return; }
     const msgUrl = siteStatusCache.messageUrl || '';
     unpublishedSub.innerHTML = '現在メンテナンス中です。<br>もうしばらくお待ちください。';
-    if (msgUrl) {
-      unpGoBtn.dataset.url = msgUrl;
-      unpGoBtn.style.display = '';
-    } else {
-      unpGoBtn.dataset.url = '';
-      unpGoBtn.style.display = 'none';
-    }
+    if (msgUrl) { unpGoBtn.dataset.url = msgUrl; unpGoBtn.style.display = ''; }
+    else { unpGoBtn.dataset.url = ''; unpGoBtn.style.display = 'none'; }
     unpublishedOverlay.classList.add('show');
   }
   function hideUnpublishedOverlay() { unpublishedOverlay.classList.remove('show'); }
+  unpGoBtn.addEventListener('click', () => { const url = unpGoBtn.dataset.url; if (url) { try { window.location.href = url; } catch (e) { alert('URLを開けませんでした'); } } });
 
-  unpGoBtn.addEventListener('click', () => {
-    const url = unpGoBtn.dataset.url;
-    if (url) {
-      try { window.location.href = url; } catch (e) { alert('URLを開けませんでした'); }
-    }
-  });
-
-  /* =========================================================
-     BAN / 承認チェック
-     ========================================================= */
+  /* BAN / 承認 */
   function checkSelfBan() {
     if (!currentUser) return false;
     if (isCurrentUserProtected()) return false;
     if (bansCache && bansCache[currentUser.uid]) { executeBan(); return true; }
     const emailKey = emailToKey(currentUser.email);
     if (emailKey && bansCache && bansCache[emailKey]) { executeBan(); return true; }
-    if (myFingerprint && deviceBansCache && deviceBansCache[myFingerprint]) {
-      executeBan(); return true;
-    }
+    if (myFingerprint && deviceBansCache && deviceBansCache[myFingerprint]) { executeBan(); return true; }
     return false;
   }
   async function checkAndApplyDeviceBan(user, currentFingerprint) {
@@ -1912,25 +1066,13 @@
       const deviceBanSnap = await get(ref(db, `deviceBans/${currentFingerprint}`));
       if (!deviceBanSnap.exists()) return false;
       const now = Date.now();
-      const banData = {
-        bannedAt: now,
-        bannedBy: "SYSTEM_DEVICE_LINK",
-        reason: "BAN済み端末からのアクセス検知（アカウント切り替え）",
-        email: user.email || "",
-        uid: user.uid
-      };
+      const banData = { bannedAt: now, bannedBy: "SYSTEM_DEVICE_LINK", reason: "BAN済み端末からのアクセス検知（アカウント切り替え）", email: user.email || "", uid: user.uid };
       const updates = {};
       updates[`bans/${user.uid}`] = banData;
-      if (user.email) {
-        const ek = emailToKey(user.email);
-        if (ek) updates[`bans/${ek}`] = banData;
-      }
+      if (user.email) { const ek = emailToKey(user.email); if (ek) updates[`bans/${ek}`] = banData; }
       await update(ref(db), updates);
       return true;
-    } catch (err) {
-      console.error('端末BAN連鎖エラー:', err);
-      return true;
-    }
+    } catch (err) { console.error('端末BAN連鎖エラー:', err); return true; }
   }
   function checkSelfApproval() {
     if (!currentUser) return false;
@@ -1939,16 +1081,11 @@
     return false;
   }
 
-  /* =========================================================
-     画像処理
-     ========================================================= */
+  /* 画像 */
   function fileToBase64Image(file) {
     return new Promise((resolve, reject) => {
       if (!file) { resolve(null); return; }
-      if (!file.type.startsWith('image/')) {
-        reject(new Error('画像ファイルを選択してください'));
-        return;
-      }
+      if (!file.type.startsWith('image/')) { reject(new Error('画像ファイルを選択してください')); return; }
       const reader = new FileReader();
       reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
       reader.onload = (e) => {
@@ -1956,29 +1093,16 @@
         img.onerror = () => reject(new Error('画像の読み込みに失敗しました'));
         img.onload = () => {
           let { width, height } = img;
-          if (width > IMAGE_MAX_WIDTH) {
-            height = Math.round(height * (IMAGE_MAX_WIDTH / width));
-            width = IMAGE_MAX_WIDTH;
-          }
+          if (width > IMAGE_MAX_WIDTH) { height = Math.round(height * (IMAGE_MAX_WIDTH / width)); width = IMAGE_MAX_WIDTH; }
           const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           let quality = IMAGE_QUALITY;
           let dataUrl = canvas.toDataURL('image/jpeg', quality);
-          while (dataUrl.length > IMAGE_MAX_BASE64_SIZE && quality > 0.3) {
-            quality -= 0.1;
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
-          }
-          if (dataUrl.length > IMAGE_MAX_BASE64_SIZE) {
-            reject(new Error('画像が大きすぎます。別の画像を選んでください。'));
-            return;
-          }
-          resolve({
-            dataUrl, name: file.name, type: 'image/jpeg',
-            width, height, size: dataUrl.length
-          });
+          while (dataUrl.length > IMAGE_MAX_BASE64_SIZE && quality > 0.3) { quality -= 0.1; dataUrl = canvas.toDataURL('image/jpeg', quality); }
+          if (dataUrl.length > IMAGE_MAX_BASE64_SIZE) { reject(new Error('画像が大きすぎます。別の画像を選んでください。')); return; }
+          resolve({ dataUrl, name: file.name, type: 'image/jpeg', width, height, size: dataUrl.length });
         };
         img.src = e.target.result;
       };
@@ -1989,42 +1113,22 @@
     if (!file || !file.dataUrl) return '';
     const name = file.name || '添付画像';
     const dataUrl = file.dataUrl;
-    return `
-      <div class="post-file">
-        <a href="${dataUrl}" target="_blank" rel="noopener noreferrer">
-          <img src="${dataUrl}" alt="${escapeHtml(name)}" loading="lazy">
-        </a>
-        <a href="${dataUrl}" download="${escapeHtml(name)}">📎 ${escapeHtml(name)}（${formatSize(file.size)}）</a>
-      </div>`;
+    return `<div class="post-file"><a href="${dataUrl}" target="_blank" rel="noopener noreferrer"><img src="${dataUrl}" alt="${escapeHtml(name)}" loading="lazy"></a><a href="${dataUrl}" download="${escapeHtml(name)}">📎 ${escapeHtml(name)}（${formatSize(file.size)}）</a></div>`;
   }
   async function updatePreview(fileInput, boxId, imgId, infoId) {
     const file = fileInput.files[0];
-    const box = document.getElementById(boxId);
-    const img = document.getElementById(imgId);
-    const info = document.getElementById(infoId);
-    if (!file) {
-      box.classList.remove('show');
-      img.src = '';
-      info.textContent = '';
-      return null;
-    }
+    const box = document.getElementById(boxId), img = document.getElementById(imgId), info = document.getElementById(infoId);
+    if (!file) { box.classList.remove('show'); img.src = ''; info.textContent = ''; return null; }
     try {
       const result = await fileToBase64Image(file);
       img.src = result.dataUrl;
       info.textContent = `${file.name}（${result.width}×${result.height}, ${formatSize(result.size)}）`;
       box.classList.add('show');
       return result;
-    } catch (err) {
-      alert(err.message);
-      fileInput.value = '';
-      box.classList.remove('show');
-      return null;
-    }
+    } catch (err) { alert(err.message); fileInput.value = ''; box.classList.remove('show'); return null; }
   }
 
-  /* =========================================================
-     利用ルール開閉
-     ========================================================= */
+  /* 利用ルール開閉 */
   (function initSiteRules() {
     const rulesEl = document.getElementById('siteRules');
     const toggleBtn = document.getElementById('rulesToggleBtn');
@@ -2038,23 +1142,16 @@
     });
   })();
 
-  /* コピー・右クリック・ドラッグ制御 */
   document.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; });
   document.addEventListener('selectstart', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return true;
-    e.preventDefault();
-    return false;
+    e.preventDefault(); return false;
   });
   document.addEventListener('dragstart', (e) => {
-    if (e.target.tagName === 'IMG' || e.target.tagName === 'A') {
-      e.preventDefault();
-      return false;
-    }
+    if (e.target.tagName === 'IMG' || e.target.tagName === 'A') { e.preventDefault(); return false; }
   });
 
-  /* =========================================================
-     バッジ機能権限監視
-     ========================================================= */
+  /* バッジ機能権限 */
   function initBadgeFeatureListener() {
     if (badgeFeatureUnsubscribe) badgeFeatureUnsubscribe();
     badgeFeatureUnsubscribe = onValue(ref(db, 'badgeFeatures'), (snap) => {
@@ -2066,7 +1163,6 @@
       updateEmailToggleVisibility();
     }, (err) => console.error('バッジ機能権限監視エラー:', err));
   }
-
   function initNicknamesListener() {
     if (nicknamesUnsubscribe) nicknamesUnsubscribe();
     nicknamesUnsubscribe = onValue(ref(db, 'nicknames'), (snap) => {
@@ -2075,38 +1171,24 @@
       if (um && !um.classList.contains('hidden')) renderUserList();
     }, (err) => console.error('ニックネーム監視エラー:', err));
   }
-
   function updateMyBadgeToggleVisibility() {
     if (!currentUser) return;
-    const hasCustomBadge = currentUser.uid && customBadgesCache[currentUser.uid] &&
-                           Object.keys(customBadgesCache[currentUser.uid]).length > 0;
+    const hasCustomBadge = currentUser.uid && customBadgesCache[currentUser.uid] && Object.keys(customBadgesCache[currentUser.uid]).length > 0;
     if (userRole === 'admin' || userRole === 'owner' || userRole === 'vip' || hasCustomBadge) {
-      badgeToggleWrap.classList.remove('hidden');
-      badgeToggle.checked = myBadgePublic;
-    } else {
-      badgeToggleWrap.classList.add('hidden');
-    }
+      badgeToggleWrap.classList.remove('hidden'); badgeToggle.checked = myBadgePublic;
+    } else { badgeToggleWrap.classList.add('hidden'); }
   }
   function updateEmailToggleVisibility() {
     if (!currentUser) { emailToggleWrap.classList.add('hidden'); return; }
-    if (canToggleEmailVisibility()) {
-      emailToggleWrap.classList.remove('hidden');
-      emailToggle.checked = myEmailVisible;
-    } else {
-      emailToggleWrap.classList.add('hidden');
-    }
+    if (canToggleEmailVisibility()) { emailToggleWrap.classList.remove('hidden'); emailToggle.checked = myEmailVisible; }
+    else emailToggleWrap.classList.add('hidden');
   }
   function updateBoardEditability() {
     const formWrapper = document.getElementById('boardFormWrapper');
     const readonlyNote = document.getElementById('boardReadonlyNote');
     if (!formWrapper || !readonlyNote) return;
-    if (canManageBoard()) {
-      formWrapper.classList.remove('hidden');
-      readonlyNote.classList.add('hidden');
-    } else {
-      formWrapper.classList.add('hidden');
-      readonlyNote.classList.remove('hidden');
-    }
+    if (canManageBoard()) { formWrapper.classList.remove('hidden'); readonlyNote.classList.add('hidden'); }
+    else { formWrapper.classList.add('hidden'); readonlyNote.classList.remove('hidden'); }
   }
   function updateAdminControlsVisibility() {
     if (!currentUser) return;
@@ -2118,118 +1200,60 @@
     const banListBtn = document.getElementById('banListBtn');
     const userListBtn = document.getElementById('userListBtn');
     const publishBtnEl = document.getElementById('publishBtn');
-
-    const showPending = canApprove();
-    const showBackup = canBackup();
-    const showBan = canBan();
-    const showPublish = canPublish();
-    const showLockdown = canLockdown();
-    const showAlarm = canAlarm();
-
-    if (showAlarm) { alarmBtn.classList.remove('hidden'); updateAlarmBtnUI(); }
-    else alarmBtn.classList.add('hidden');
-
-    if (showLockdown) { lockdownBtn.classList.remove('hidden'); updateLockdownBtnUI(); }
-    else lockdownBtn.classList.add('hidden');
-
-    if (showPending) pendingBtn.classList.remove('hidden');
-    else pendingBtn.classList.add('hidden');
-
-    if (showBackup) {
-      backupBtn.classList.remove('hidden');
-      restoreBtn.classList.remove('hidden');
-    } else {
-      backupBtn.classList.add('hidden');
-      restoreBtn.classList.add('hidden');
-    }
-
-    if (showBan) {
-      banListBtn.classList.remove('hidden');
-      userListBtn.classList.remove('hidden');
-    } else {
-      banListBtn.classList.add('hidden');
-      userListBtn.classList.add('hidden');
-    }
-
-    if (showPublish) publishBtnEl.classList.remove('hidden');
-    else publishBtnEl.classList.add('hidden');
-
+    const showPending = canApprove(), showBackup = canBackup(), showBan = canBan();
+    const showPublish = canPublish(), showLockdown = canLockdown(), showAlarm = canAlarm();
+    if (showAlarm) { alarmBtn.classList.remove('hidden'); updateAlarmBtnUI(); } else alarmBtn.classList.add('hidden');
+    if (showLockdown) { lockdownBtn.classList.remove('hidden'); updateLockdownBtnUI(); } else lockdownBtn.classList.add('hidden');
+    if (showPending) pendingBtn.classList.remove('hidden'); else pendingBtn.classList.add('hidden');
+    if (showBackup) { backupBtn.classList.remove('hidden'); restoreBtn.classList.remove('hidden'); }
+    else { backupBtn.classList.add('hidden'); restoreBtn.classList.add('hidden'); }
+    if (showBan) { banListBtn.classList.remove('hidden'); userListBtn.classList.remove('hidden'); }
+    else { banListBtn.classList.add('hidden'); userListBtn.classList.add('hidden'); }
+    if (showPublish) publishBtnEl.classList.remove('hidden'); else publishBtnEl.classList.add('hidden');
     const anyVisible = showPending || showBackup || showBan || showPublish || showLockdown || showAlarm;
-    if (anyVisible) adminControls.classList.remove('hidden');
-    else adminControls.classList.add('hidden');
+    if (anyVisible) adminControls.classList.remove('hidden'); else adminControls.classList.add('hidden');
   }
   function updateLockdownBtnUI() {
     const btn = document.getElementById('lockdownBtn');
     if (!btn) return;
     const isOn = siteStatusCache && siteStatusCache.lockdown === true;
-    if (isOn) {
-      btn.textContent = '🔓 ロックダウン解除';
-      btn.classList.add('active');
-    } else {
-      btn.textContent = '🚨 緊急ロックダウン';
-      btn.classList.remove('active');
-    }
+    if (isOn) { btn.textContent = '🔓 ロックダウン解除'; btn.classList.add('active'); }
+    else { btn.textContent = '🚨 緊急ロックダウン'; btn.classList.remove('active'); }
   }
   function updateAlarmBtnUI() {
     const btn = document.getElementById('alarmBtn');
     if (!btn) return;
     const isOn = siteStatusCache && siteStatusCache.alarm === true;
-    if (isOn) {
-      btn.textContent = '🔕 アラート解除';
-      btn.classList.add('active');
-    } else {
-      btn.textContent = '🚨 手動アラート';
-      btn.classList.remove('active');
-    }
+    if (isOn) { btn.textContent = '🔕 アラート解除'; btn.classList.add('active'); }
+    else { btn.textContent = '🚨 手動アラート'; btn.classList.remove('active'); }
   }
 
-  /* =========================================================
-     アラート
-     ========================================================= */
+  /* アラート */
   window.openAlarmModal = function() {
     if (!canAlarm()) { alert('この操作は管理者または主のみ可能です。'); return; }
     if (siteStatusCache.alarm === true) {
       if (!confirm('🚨 アラートを解除しますか？\n\n全ユーザーのアラートトーストが消えます。')) return;
-      releaseAlarm();
-      return;
+      releaseAlarm(); return;
     }
     document.getElementById('alarmReasonInput').value = '';
     document.getElementById('alarmModal').classList.remove('hidden');
-    setTimeout(() => {
-      const inp = document.getElementById('alarmReasonInput');
-      if (inp) inp.focus();
-    }, 100);
+    setTimeout(() => { const inp = document.getElementById('alarmReasonInput'); if (inp) inp.focus(); }, 100);
   };
-  function closeAlarmModal() {
-    document.getElementById('alarmModal').classList.add('hidden');
-  }
+  function closeAlarmModal() { document.getElementById('alarmModal').classList.add('hidden'); }
   document.getElementById('alarmCancelBtn').addEventListener('click', closeAlarmModal);
-  document.getElementById('alarmModal').addEventListener('click', (e) => {
-    if (e.target.id === 'alarmModal') closeAlarmModal();
-  });
+  document.getElementById('alarmModal').addEventListener('click', (e) => { if (e.target.id === 'alarmModal') closeAlarmModal(); });
   document.getElementById('alarmFireBtn').addEventListener('click', async () => {
     if (!canAlarm()) { alert('この操作は管理者または主のみ可能です。'); return; }
     const reason = document.getElementById('alarmReasonInput').value.trim();
-    if (!confirm(
-      '🚨【手動アラートを発令】🚨\n\n' +
-      '全ユーザー（未ログイン含む）の画面右上にアラートトーストを表示します。\n' +
-      '管理者・主は影響を受けません。\n\n' +
-      '本当に発令しますか？'
-    )) return;
+    if (!confirm('🚨【手動アラートを発令】🚨\n\n全ユーザー（未ログイン含む）の画面右上にアラートトーストを表示します。\n管理者・主は影響を受けません。\n\n本当に発令しますか？')) return;
     try {
       await set(ref(db, 'siteStatus'), {
-        published: siteStatusCache.published !== false,
-        messageUrl: siteStatusCache.messageUrl || '',
-        lockdown: siteStatusCache.lockdown === true,
-        alarm: true,
-        alarmReason: reason || '緊急対応',
-        alarmBy: currentUser ? currentUser.email : '管理者',
-        alarmAt: Date.now(),
-        updatedAt: Date.now(),
-        updatedBy: currentUser ? currentUser.email : 'system'
+        published: siteStatusCache.published !== false, messageUrl: siteStatusCache.messageUrl || '',
+        lockdown: siteStatusCache.lockdown === true, alarm: true,
+        alarmReason: reason || '緊急対応', alarmBy: currentUser ? currentUser.email : '管理者',
+        alarmAt: Date.now(), updatedAt: Date.now(), updatedBy: currentUser ? currentUser.email : 'system'
       });
-      closeAlarmModal();
-      showBanner('🚨 手動アラートを発令しました', false);
+      closeAlarmModal(); showBanner('🚨 手動アラートを発令しました', false);
     } catch (err) {
       console.error('アラート発令エラー:', err);
       showBanner('アラート発令失敗: ' + (err.code || err.message), true);
@@ -2240,13 +1264,10 @@
     if (!canAlarm()) { alert('この操作は管理者または主のみ可能です。'); return; }
     try {
       await set(ref(db, 'siteStatus'), {
-        published: siteStatusCache.published !== false,
-        messageUrl: siteStatusCache.messageUrl || '',
-        lockdown: siteStatusCache.lockdown === true,
-        alarm: false,
+        published: siteStatusCache.published !== false, messageUrl: siteStatusCache.messageUrl || '',
+        lockdown: siteStatusCache.lockdown === true, alarm: false,
         alarmReason: '', alarmBy: '', alarmAt: 0,
-        updatedAt: Date.now(),
-        updatedBy: currentUser ? currentUser.email : 'system'
+        updatedAt: Date.now(), updatedBy: currentUser ? currentUser.email : 'system'
       });
       showBanner('✅ アラートを解除しました', false);
     } catch (err) {
@@ -2260,26 +1281,14 @@
     const isOn = siteStatusCache && siteStatusCache.lockdown === true;
     const newState = !isOn;
     if (newState === true) {
-      if (!confirm(
-        '🚨【緊急ロックダウン】🚨\n\n' +
-        '管理者・主以外のすべてのユーザー（未ログイン含む）を\n' +
-        '強制タブ削除または about:blank へ遷移させます。\n\n' +
-        '本当に実行しますか？'
-      )) return;
-    } else {
-      if (!confirm('ロックダウンを解除しますか？')) return;
-    }
+      if (!confirm('🚨【緊急ロックダウン】🚨\n\n管理者・主以外のすべてのユーザー（未ログイン含む）を\n強制タブ削除または about:blank へ遷移させます。\n\n本当に実行しますか？')) return;
+    } else { if (!confirm('ロックダウンを解除しますか？')) return; }
     try {
       await set(ref(db, 'siteStatus'), {
-        published: siteStatusCache.published !== false,
-        messageUrl: siteStatusCache.messageUrl || '',
-        lockdown: newState,
-        alarm: siteStatusCache.alarm === true,
-        alarmReason: siteStatusCache.alarmReason || '',
-        alarmBy: siteStatusCache.alarmBy || '',
-        alarmAt: siteStatusCache.alarmAt || 0,
-        updatedAt: Date.now(),
-        updatedBy: currentUser.email
+        published: siteStatusCache.published !== false, messageUrl: siteStatusCache.messageUrl || '',
+        lockdown: newState, alarm: siteStatusCache.alarm === true,
+        alarmReason: siteStatusCache.alarmReason || '', alarmBy: siteStatusCache.alarmBy || '',
+        alarmAt: siteStatusCache.alarmAt || 0, updatedAt: Date.now(), updatedBy: currentUser.email
       });
       showBanner(newState ? '🚨 緊急ロックダウンを発動しました' : '✅ ロックダウンを解除しました', false);
     } catch (err) {
@@ -2289,9 +1298,7 @@
     }
   };
 
-  /* =========================================================
-     掲示板（board）
-     ========================================================= */
+  /* 掲示板 */
   function initBoardListener() {
     if (boardUnsubscribe) boardUnsubscribe();
     boardUnsubscribe = onValue(ref(db, 'board'), (snap) => {
@@ -2304,10 +1311,7 @@
     if (!container) return;
     container.innerHTML = '';
     const entries = Object.entries(boardCache || {});
-    if (entries.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-sm">まだ投稿がありません。</p>';
-      return;
-    }
+    if (entries.length === 0) { container.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">まだ投稿がありません。</p>'; return; }
     entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
     entries.forEach(([key, item]) => {
       if (!item) return;
@@ -2331,13 +1335,8 @@
         delBtn.addEventListener('click', async () => {
           if (!canManageBoard()) { alert('掲示板管理権限がありません。'); return; }
           if (!confirm('この投稿を削除しますか？')) return;
-          try {
-            await remove(ref(db, `board/${key}`));
-            showBanner('掲示板投稿を削除しました', false);
-          } catch (err) {
-            console.error('掲示板削除エラー:', err);
-            showBanner('削除失敗: ' + (err.code || err.message), true);
-          }
+          try { await remove(ref(db, `board/${key}`)); showBanner('掲示板投稿を削除しました', false); }
+          catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
         });
       }
       container.appendChild(card);
@@ -2365,18 +1364,12 @@
     const file = fileInput.files[0];
     const btn = document.getElementById('boardSubmitBtn');
     if (!title) { alert('タイトルを入力してください。'); return; }
-    btn.disabled = true;
-    btn.textContent = file ? '画像処理中...' : '投稿中...';
+    btn.disabled = true; btn.textContent = file ? '画像処理中...' : '投稿中...';
     try {
       let fileData = null;
       if (file) fileData = await fileToBase64Image(file);
       const newRef = push(ref(db, 'board'));
-      await set(newRef, {
-        title, content: content || '', file: fileData,
-        authorEmail: currentUser.email,
-        authorUid: currentUser.uid,
-        createdAt: Date.now()
-      });
+      await set(newRef, { title, content: content || '', file: fileData, authorEmail: currentUser.email, authorUid: currentUser.uid, createdAt: Date.now() });
       document.getElementById('boardForm').reset();
       document.getElementById('boardPreviewBox').classList.remove('show');
       showBanner('掲示板に投稿しました', false);
@@ -2384,99 +1377,60 @@
       console.error('掲示板投稿エラー:', err);
       showBanner('投稿失敗: ' + (err.code || err.message), true);
       alert('投稿に失敗しました。\n' + (err.message || ''));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '📢 掲示板に投稿する';
-    }
+    } finally { btn.disabled = false; btn.textContent = '📢 掲示板に投稿する'; }
   });
   document.getElementById('boardFileInput').addEventListener('change', () => {
     updatePreview(document.getElementById('boardFileInput'), 'boardPreviewBox', 'boardPreviewImg', 'boardPreviewInfo');
   });
 
-  /* =========================================================
-     ログイン / ログアウト
-     ========================================================= */
+  /* ログイン */
   document.getElementById('switchAccountBtn').addEventListener('click', async () => {
     intentionalSignOut = true;
-    try { await signOut(auth); } catch (e) { console.error(e); }
-    banOverlay.classList.remove('show');
-    document.body.style.background = '';
-    showLoginView();
-    hideBootOverlay();
+    try { await signOut(auth); } catch (e) {}
+    banOverlay.classList.remove('show'); document.body.style.background = '';
+    showLoginView(); hideBootOverlay();
     setTimeout(() => { intentionalSignOut = false; initialAuthCheckDone = false; }, 500);
   });
-
   document.getElementById('googleLoginBtn').addEventListener('click', async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      console.error('ログインエラー:', err);
-      if (err.code !== 'auth/popup-closed-by-user') {
-        alert('ログインに失敗しました: ' + (err.message || ''));
-      }
-    }
+    try { await signInWithPopup(auth, provider); }
+    catch (err) { console.error('ログインエラー:', err); if (err.code !== 'auth/popup-closed-by-user') alert('ログインに失敗しました: ' + (err.message || '')); }
   });
-
   async function trySilentSignIn() {
     try {
       const p = new GoogleAuthProvider();
       p.setCustomParameters({ prompt: 'none' });
       await signInWithPopup(auth, p);
-    } catch (err) {
-      console.warn('サイレントサインイン失敗:', err.code || err.message);
-      hideBootOverlay();
-      showLoginView();
-    } finally {
-      initialAuthCheckDone = true;
-    }
+    } catch (err) { console.warn('サイレントサインイン失敗:', err.code || err.message); hideBootOverlay(); showLoginView(); }
+    finally { initialAuthCheckDone = true; }
   }
-
   window.doLogout = async function() {
     intentionalSignOut = true;
     if (currentUser) saveReadThreads(currentUser.email, readThreadsCache);
-    if (postsUnsubscribe) { postsUnsubscribe(); postsUnsubscribe = null; }
-    if (threadsUnsubscribe) { threadsUnsubscribe(); threadsUnsubscribe = null; }
-    if (badgesUnsubscribe) { badgesUnsubscribe(); badgesUnsubscribe = null; }
-    if (bansUnsubscribe) { bansUnsubscribe(); bansUnsubscribe = null; }
-    if (deviceBansUnsubscribe) { deviceBansUnsubscribe(); deviceBansUnsubscribe = null; }
-    if (knownUsersUnsubscribe) { knownUsersUnsubscribe(); knownUsersUnsubscribe = null; }
-    if (pendingUnsubscribe) { pendingUnsubscribe(); pendingUnsubscribe = null; }
-    if (approvedUnsubscribe) { approvedUnsubscribe(); approvedUnsubscribe = null; }
-    if (selfApprovalUnsubscribe) { selfApprovalUnsubscribe(); selfApprovalUnsubscribe = null; }
-    if (siteStatusUnsubscribe) { siteStatusUnsubscribe(); siteStatusUnsubscribe = null; }
-    if (badgeFeatureUnsubscribe) { badgeFeatureUnsubscribe(); badgeFeatureUnsubscribe = null; }
-    if (boardUnsubscribe) { boardUnsubscribe(); boardUnsubscribe = null; }
-    if (nicknamesUnsubscribe) { nicknamesUnsubscribe(); nicknamesUnsubscribe = null; }
+    [postsUnsubscribe, threadsUnsubscribe, badgesUnsubscribe, bansUnsubscribe, deviceBansUnsubscribe,
+     knownUsersUnsubscribe, pendingUnsubscribe, approvedUnsubscribe, selfApprovalUnsubscribe,
+     siteStatusUnsubscribe, badgeFeatureUnsubscribe, boardUnsubscribe, nicknamesUnsubscribe].forEach(fn => { if (fn) fn(); });
+    postsUnsubscribe = threadsUnsubscribe = badgesUnsubscribe = bansUnsubscribe = deviceBansUnsubscribe = null;
+    knownUsersUnsubscribe = pendingUnsubscribe = approvedUnsubscribe = selfApprovalUnsubscribe = null;
+    siteStatusUnsubscribe = badgeFeatureUnsubscribe = boardUnsubscribe = nicknamesUnsubscribe = null;
     stopLockdownEnforcer();
-    try { await signOut(auth); } catch (e) { console.error(e); }
-    banOverlay.classList.remove('show');
-    hideUnpublishedOverlay();
-    hideAlarmToast();
+    try { await signOut(auth); } catch (e) {}
+    banOverlay.classList.remove('show'); hideUnpublishedOverlay(); hideAlarmToast();
     document.body.style.background = '';
-    showLoginView();
-    hideBootOverlay();
+    showLoginView(); hideBootOverlay();
     setTimeout(() => { intentionalSignOut = false; initialAuthCheckDone = false; }, 500);
   };
 
-  /* =========================================================
-     サイトステータス監視
-     ========================================================= */
+  /* サイトステータス */
   function initSiteStatusListener() {
     if (siteStatusUnsubscribe) siteStatusUnsubscribe();
     siteStatusUnsubscribe = onValue(ref(db, 'siteStatus'), (snap) => {
       const val = snap.exists() ? snap.val() : { published: true, messageUrl: '', lockdown: false, alarm: false };
       siteStatusCache = {
-        published: val.published !== false,
-        messageUrl: val.messageUrl || '',
-        lockdown: val.lockdown === true,
-        alarm: val.alarm === true,
-        alarmReason: val.alarmReason || '',
-        alarmBy: val.alarmBy || '',
-        alarmAt: val.alarmAt || 0
+        published: val.published !== false, messageUrl: val.messageUrl || '',
+        lockdown: val.lockdown === true, alarm: val.alarm === true,
+        alarmReason: val.alarmReason || '', alarmBy: val.alarmBy || '', alarmAt: val.alarmAt || 0
       };
-      updateLockdownBtnUI();
-      updateAlarmBtnUI();
-      updatePublishModalUI();
+      updateLockdownBtnUI(); updateAlarmBtnUI(); updatePublishModalUI();
       if (checkAndApplyLockdown()) return;
       checkAndApplyAlarm();
       if (isCurrentUserProtected()) { hideUnpublishedOverlay(); return; }
@@ -2485,32 +1439,22 @@
     }, (err) => console.error('サイト公開状態監視エラー:', err));
   }
 
-  /* =========================================================
-     カスタムバッジ・BAN・既知ユーザー監視
-     ========================================================= */
+  /* カスタムバッジ・BAN・既知ユーザー */
   function initCustomBadgesListener() {
     if (badgesUnsubscribe) badgesUnsubscribe();
     badgesUnsubscribe = onValue(ref(db, 'customBadges'), (snap) => {
       customBadgesCache = snap.exists() ? snap.val() : {};
       if (currentThreadKey) renderPostsFromCache();
-      updateMyBadgeToggleVisibility();
-      updateAdminControlsVisibility();
+      updateMyBadgeToggleVisibility(); updateAdminControlsVisibility();
     }, (err) => console.error('カスタムバッジ監視エラー:', err));
   }
   function initBansListener() {
     if (bansUnsubscribe) bansUnsubscribe();
-    bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
-      bansCache = snap.exists() ? snap.val() : {};
-      checkSelfBan();
-      if (currentThreadKey) renderPostsFromCache();
-    }, (err) => console.error('BANリスト監視エラー:', err));
+    bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => { bansCache = snap.exists() ? snap.val() : {}; checkSelfBan(); if (currentThreadKey) renderPostsFromCache(); }, (err) => console.error('BANリスト監視エラー:', err));
   }
   function initDeviceBansListener() {
     if (deviceBansUnsubscribe) deviceBansUnsubscribe();
-    deviceBansUnsubscribe = onValue(ref(db, 'deviceBans'), (snap) => {
-      deviceBansCache = snap.exists() ? snap.val() : {};
-      checkSelfBan();
-    }, (err) => console.error('デバイスBANリスト監視エラー:', err));
+    deviceBansUnsubscribe = onValue(ref(db, 'deviceBans'), (snap) => { deviceBansCache = snap.exists() ? snap.val() : {}; checkSelfBan(); }, (err) => console.error('デバイスBAN監視エラー:', err));
   }
   function initKnownUsersListener() {
     if (knownUsersUnsubscribe) knownUsersUnsubscribe();
@@ -2527,7 +1471,7 @@
       updatePendingBadge();
       const pm = document.getElementById('pendingModal');
       if (pm && !pm.classList.contains('hidden')) renderPendingList();
-    }, (err) => console.error('承認待ちリスト監視エラー:', err));
+    }, (err) => console.error('承認待ち監視エラー:', err));
   }
   function initApprovedListener() {
     if (approvedUnsubscribe) approvedUnsubscribe();
@@ -2535,43 +1479,32 @@
       approvedCache = snap.exists() ? snap.val() : {};
       const um = document.getElementById('userModal');
       if (um && !um.classList.contains('hidden')) renderUserList();
-    }, (err) => console.error('承認済みリスト監視エラー:', err));
+    }, (err) => console.error('承認済み監視エラー:', err));
   }
   function updatePendingBadge() {
     const cnt = Object.keys(pendingCache || {}).length;
     const badgeEl = document.getElementById('pendingBadgeCount');
     const btnEl = document.getElementById('pendingBtn');
     if (badgeEl) badgeEl.textContent = cnt;
-    if (btnEl) {
-      if (cnt > 0) btnEl.classList.add('has-pending');
-      else btnEl.classList.remove('has-pending');
-    }
+    if (btnEl) { if (cnt > 0) btnEl.classList.add('has-pending'); else btnEl.classList.remove('has-pending'); }
   }
 
-  /* =========================================================
-     ユーザー登録・承認申請
-     ========================================================= */
+  /* ユーザー登録・承認申請 */
   async function registerMyFingerprint() {
     if (!currentUser || !myFingerprint) return;
     const now = Date.now();
-    try {
-      await update(ref(db, `userDevices/${currentUser.uid}`), { [myFingerprint]: now });
-    } catch (e) { console.warn('フィンガープリント登録スキップ:', e.message); }
+    try { await update(ref(db, `userDevices/${currentUser.uid}`), { [myFingerprint]: now }); } catch (e) {}
     try {
       const userRef = ref(db, `knownUsers/${currentUser.uid}`);
       const existingSnap = await get(userRef);
       const existing = existingSnap.exists() ? existingSnap.val() : null;
       await update(userRef, {
-        email: currentUser.email || '',
-        displayName: currentUser.displayName || '',
-        lastSeen: now,
-        firstSeen: existing && existing.firstSeen ? existing.firstSeen : now,
-        role: userRole || null,
-        lastFingerprint: myFingerprint
+        email: currentUser.email || '', displayName: currentUser.displayName || '',
+        lastSeen: now, firstSeen: existing && existing.firstSeen ? existing.firstSeen : now,
+        role: userRole || null, lastFingerprint: myFingerprint
       });
-    } catch (e) { console.warn('knownUsers 登録スキップ:', e.message); }
+    } catch (e) {}
   }
-
   async function requestApproval() {
     if (!currentUser) return;
     try {
@@ -2580,179 +1513,100 @@
       const pendingSnap = await get(ref(db, `pendingUsers/${currentUser.uid}`));
       const alreadyPending = pendingSnap.exists();
       await set(ref(db, `pendingUsers/${currentUser.uid}`), {
-        email: currentUser.email || '',
-        displayName: currentUser.displayName || '',
-        requestedAt: Date.now(),
-        fingerprint: myFingerprint || ''
+        email: currentUser.email || '', displayName: currentUser.displayName || '',
+        requestedAt: Date.now(), fingerprint: myFingerprint || ''
       });
-      if (!alreadyPending) console.log('新規承認申請:', currentUser.email);
-      else console.log('既に承認待ち:', currentUser.email);
-    } catch (e) { console.warn('承認申請スキップ:', e.message); }
+      console.log(alreadyPending ? '既に承認待ち:' : '新規承認申請:', currentUser.email);
+    } catch (e) {}
   }
 
-  /* =========================================================
-     onAuthStateChanged（起動フロー）
-     ========================================================= */
+  /* 起動フロー */
   onAuthStateChanged(auth, async (user) => {
-    if (intentionalSignOut) {
-      currentUser = null;
-      userRole = null;
-      return;
-    }
+    if (intentionalSignOut) { currentUser = null; userRole = null; return; }
     currentUser = user;
-
     if (!user) {
-      userRole = null;
-      initSiteStatusListener();
+      userRole = null; initSiteStatusListener();
       if (!initialAuthCheckDone) { trySilentSignIn(); return; }
       if (checkAndApplyLockdown()) return;
-      hideBootOverlay();
-      showLoginView();
-      hideUnpublishedOverlay();
-      checkAndApplyAlarm();
+      hideBootOverlay(); showLoginView(); hideUnpublishedOverlay(); checkAndApplyAlarm();
       return;
     }
-
     userRole = roleFromEmail(user.email);
     myBadgePublic = loadBadgeVisibility(user.email);
     myEmailVisible = loadEmailVisibility(user.email);
     myFingerprint = generateFingerprint();
     readThreadsCache = loadReadThreads(user.email);
-
     initSiteStatusListener();
     initBadgeFeatureListener();
-
     try {
       const initSiteSnap = await get(ref(db, 'siteStatus'));
       const initVal = initSiteSnap.exists() ? initSiteSnap.val() : { published: true, messageUrl: '', lockdown: false, alarm: false };
-      siteStatusCache = {
-        published: initVal.published !== false,
-        messageUrl: initVal.messageUrl || '',
-        lockdown: initVal.lockdown === true,
-        alarm: initVal.alarm === true,
-        alarmReason: initVal.alarmReason || '',
-        alarmBy: initVal.alarmBy || '',
-        alarmAt: initVal.alarmAt || 0
-      };
-    } catch (e) { console.warn('siteStatus初期取得失敗:', e.message); }
-
+      siteStatusCache = { published: initVal.published !== false, messageUrl: initVal.messageUrl || '',
+        lockdown: initVal.lockdown === true, alarm: initVal.alarm === true,
+        alarmReason: initVal.alarmReason || '', alarmBy: initVal.alarmBy || '', alarmAt: initVal.alarmAt || 0 };
+    } catch (e) {}
     if (checkAndApplyLockdown()) return;
-
     if (isCurrentUserProtected()) {
-      initBansListener();
-      initDeviceBansListener();
-      initApprovedListener();
-      hideUnpublishedOverlay();
-      checkAndApplyAlarm();
+      initBansListener(); initDeviceBansListener(); initApprovedListener();
+      hideUnpublishedOverlay(); checkAndApplyAlarm();
     } else {
       const isDeviceBanned = await checkAndApplyDeviceBan(user, myFingerprint);
       if (isDeviceBanned) { executeBan(); return; }
       if (checkSelfBan()) return;
-      initBansListener();
-      initDeviceBansListener();
-      initApprovedListener();
+      initBansListener(); initDeviceBansListener(); initApprovedListener();
       checkAndApplyAlarm();
     }
-
     try {
       const approvedSnap = await get(ref(db, 'approvedUsers'));
       approvedCache = approvedSnap.exists() ? approvedSnap.val() : {};
-    } catch (e) { console.warn('承認済みリスト取得スキップ:', e.message); }
-
+    } catch (e) {}
     const isApproved = checkSelfApproval();
-    if (!isApproved) {
-      await requestApproval();
-      executePending();
-      return;
-    }
-
+    if (!isApproved) { await requestApproval(); executePending(); return; }
     userApproved = true;
-
     updateMyBadgeToggleVisibility();
     updateEmailToggleVisibility();
     renderRoleBadge(userRole);
-
     userEmailSpan.classList.add('hidden');
     userEmailSpan.textContent = '';
-    if (userRole === 'admin') {
-      userEmailSpan.classList.remove('hidden');
-      userEmailSpan.textContent = user.email + '（管理者）';
-      userEmailSpan.className = 'text-xs text-red-700 font-bold';
-    } else if (userRole === 'owner') {
-      userEmailSpan.classList.remove('hidden');
-      userEmailSpan.textContent = user.email + '（主）';
-      userEmailSpan.className = 'text-xs text-blue-700 font-bold';
-    } else if (userRole === 'vip') {
-      userEmailSpan.classList.remove('hidden');
-      userEmailSpan.textContent = user.email + '（VIP）';
-      userEmailSpan.className = 'text-xs text-purple-700 font-bold';
-    }
-
+    if (userRole === 'admin') { userEmailSpan.classList.remove('hidden'); userEmailSpan.textContent = user.email + '（管理者）'; userEmailSpan.style.color = 'var(--brown-900)'; userEmailSpan.style.fontWeight = 'bold'; }
+    else if (userRole === 'owner') { userEmailSpan.classList.remove('hidden'); userEmailSpan.textContent = user.email + '（主）'; userEmailSpan.style.color = 'var(--brown-800)'; userEmailSpan.style.fontWeight = 'bold'; }
+    else if (userRole === 'vip') { userEmailSpan.classList.remove('hidden'); userEmailSpan.textContent = user.email + '（VIP）'; userEmailSpan.style.color = 'var(--brown-600)'; userEmailSpan.style.fontWeight = 'bold'; }
     updateAdminControlsVisibility();
     updateBoardEditability();
     setTimeout(updateAdminControlsVisibility, 500);
-
     if (selfApprovalUnsubscribe) selfApprovalUnsubscribe();
     selfApprovalUnsubscribe = onValue(ref(db, `approvedUsers/${user.uid}`), (snap) => {
       if (!snap.exists() && userRole !== 'admin' && userRole !== 'owner' && userRole !== 'vip') {
-        approvedCache = {};
-        userApproved = false;
-        requestApproval();
-        executePending();
+        approvedCache = {}; userApproved = false; requestApproval(); executePending();
       }
     });
-
-    hideBootOverlay();
-    showMainView();
-    setConnection(true);
-
+    hideBootOverlay(); showMainView(); setConnection(true);
     loadThreads();
-    initBoardListener();
-    initCustomBadgesListener();
-    initBansListener();
-    initDeviceBansListener();
-    initKnownUsersListener();
-    initPendingListener();
-    initApprovedListener();
-    initNicknamesListener();
-
+    initBoardListener(); initCustomBadgesListener(); initBansListener();
+    initDeviceBansListener(); initKnownUsersListener(); initPendingListener();
+    initApprovedListener(); initNicknamesListener();
     await registerMyFingerprint();
   });
 
-  /* =========================================================
-     スレッド一覧
-     ========================================================= */
+  /* スレッド一覧 */
   function loadThreads() {
     if (threadsUnsubscribe) threadsUnsubscribe();
     threadsUnsubscribe = onValue(ref(db, 'threads'), (snap) => {
       const val = snap.exists() ? snap.val() : {};
       allThreadsCache = Object.entries(val).map(([key, t]) => ({ key, ...t }));
-      renderThreadsList();
-      updateUnreadCountLabel();
+      renderThreadsList(); updateUnreadCountLabel();
     }, (err) => {
       console.error('スレッド監視エラー:', err);
-      if (threadsContainer) {
-        threadsContainer.innerHTML = '<p class="text-red-500 text-sm">スレッド読み込みエラー</p>';
-      }
+      if (threadsContainer) threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">スレッド読み込みエラー</p>';
     });
   }
-
   function renderThreadsList() {
     if (!threadsContainer) return;
     threadsContainer.innerHTML = '';
-
     let list = allThreadsCache.slice();
     list.sort((a, b) => (b.lastActivityAt || b.createdAt || 0) - (a.lastActivityAt || a.createdAt || 0));
-
-    if (unreadOnlyFilter) {
-      list = list.filter(t => isThreadUnread(t));
-    }
-
-    if (list.length === 0) {
-      threadsContainer.innerHTML = '<p class="text-gray-400 text-sm">スレッドがありません。</p>';
-      return;
-    }
-
+    if (unreadOnlyFilter) list = list.filter(t => isThreadUnread(t));
+    if (list.length === 0) { threadsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">スレッドがありません。</p>'; return; }
     list.forEach((thread) => {
       const isUnread = isThreadUnread(thread);
       const unreadPosts = getUnreadPostCount(thread);
@@ -2762,39 +1616,31 @@
       item.innerHTML = `
         <div class="flex justify-between items-start gap-2">
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-red-900 break-words">${escapeHtml(thread.title || '（無題）')}</div>
-            <div class="text-xs text-gray-500 mt-1">${date}</div>
+            <div class="font-bold break-words" style="color:var(--brown-950);">${escapeHtml(thread.title || '（無題）')}</div>
+            <div class="text-xs mt-1" style="color:var(--brown-600);">${date}</div>
           </div>
           <div class="flex flex-col items-end gap-1">
             ${isUnread ? '<span class="thread-new-badge">新着' + (unreadPosts > 0 ? ' ' + unreadPosts : '') + '</span>' : ''}
-            <span class="text-xs text-gray-400">${(thread.postCount || 0)} レス</span>
+            <span class="text-xs" style="color:var(--brown-500);">${(thread.postCount || 0)} レス</span>
           </div>
-        </div>
-      `;
+        </div>`;
       item.addEventListener('click', () => openThread(thread.key));
       threadsContainer.appendChild(item);
     });
   }
-
   document.getElementById('unreadOnlyCheck')?.addEventListener('change', (e) => {
-    unreadOnlyFilter = e.target.checked;
-    renderThreadsList();
+    unreadOnlyFilter = e.target.checked; renderThreadsList();
   });
-
   window.showThreadList = function() {
-    threadDetailView.classList.add('hidden');
-    boardView.classList.add('hidden');
-    threadListView.classList.remove('hidden');
-    backToListBtn.classList.add('hidden');
+    threadDetailView.classList.add('hidden'); boardView.classList.add('hidden');
+    threadListView.classList.remove('hidden'); backToListBtn.classList.add('hidden');
     currentThreadKey = null;
     if (postsUnsubscribe) { postsUnsubscribe(); postsUnsubscribe = null; }
     postsContainer.innerHTML = '';
     renderThreadsList();
   };
 
-  /* =========================================================
-     スレッド作成・詳細・レス
-     ========================================================= */
+  /* スレッド作成・詳細 */
   document.getElementById('createThreadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) { alert('ログインが必要です。'); return; }
@@ -2804,8 +1650,7 @@
     const file = fileInput.files[0];
     const btn = document.getElementById('createThreadBtn');
     if (!title) { alert('タイトルを入力してください。'); return; }
-    btn.disabled = true;
-    btn.textContent = file ? '画像処理中...' : '作成中...';
+    btn.disabled = true; btn.textContent = file ? '画像処理中...' : '作成中...';
     try {
       let fileData = null;
       if (file) fileData = await fileToBase64Image(file);
@@ -2822,12 +1667,9 @@
       if (firstContent || fileData) {
         const postRef = push(ref(db, `threads/${threadKey}/posts`));
         updates[`threads/${threadKey}/posts/${postRef.key}`] = {
-          content: firstContent || '',
-          file: fileData,
-          authorUid: currentUser.uid,
-          authorEmail: currentUser.email || '',
-          createdAt: now,
-          parentId: null
+          content: firstContent || '', file: fileData,
+          authorUid: currentUser.uid, authorEmail: currentUser.email || '',
+          createdAt: now, parentId: null
         };
       }
       await update(ref(db), updates);
@@ -2840,12 +1682,8 @@
       console.error('スレッド作成エラー:', err);
       showBanner('作成失敗: ' + (err.code || err.message), true);
       alert('スレッド作成に失敗しました。\n' + (err.message || ''));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'スレッドを立てる';
-    }
+    } finally { btn.disabled = false; btn.textContent = 'スレッドを立てる'; }
   });
-
   document.getElementById('threadFileInput').addEventListener('change', () => {
     updatePreview(document.getElementById('threadFileInput'), 'threadPreviewBox', 'threadPreviewImg', 'threadPreviewInfo');
   });
@@ -2861,7 +1699,6 @@
     backToListBtn.classList.remove('hidden');
     markThreadAsRead(threadKey);
     activeReplyParentId = null;
-
     const thread = allThreadsCache.find(t => t.key === threadKey);
     if (thread) {
       document.getElementById('currentThreadTitle').textContent = thread.title || '（無題）';
@@ -2870,13 +1707,9 @@
       document.getElementById('currentThreadAuthor').textContent = thread.authorEmail ? '作成者: ' + thread.authorEmail : '';
       currentThreadOwnerUid = thread.authorUid || null;
       const delThreadBtn = document.getElementById('deleteThreadBtn');
-      if (canDelete() || (currentUser && thread.authorUid === currentUser.uid)) {
-        delThreadBtn.classList.remove('hidden');
-      } else {
-        delThreadBtn.classList.add('hidden');
-      }
+      if (canDelete() || (currentUser && thread.authorUid === currentUser.uid)) delThreadBtn.classList.remove('hidden');
+      else delThreadBtn.classList.add('hidden');
     }
-
     if (postsUnsubscribe) postsUnsubscribe();
     postsUnsubscribe = onValue(ref(db, `threads/${threadKey}/posts`), (snap) => {
       const val = snap.exists() ? snap.val() : {};
@@ -2885,7 +1718,7 @@
       renderPostsFromCache();
     }, (err) => {
       console.error('レス監視エラー:', err);
-      postsContainer.innerHTML = '<p class="text-red-500 text-sm">レス読み込みエラー</p>';
+      postsContainer.innerHTML = '<p class="text-sm" style="color:var(--accent-red);">レス読み込みエラー</p>';
     });
   }
 
@@ -2895,12 +1728,8 @@
     postNumberMap.clear();
     let num = 1;
     allPostsCache.forEach(p => { postNumberMap.set(p.key, num++); });
-
     const rootPosts = allPostsCache.filter(p => !p.parentId);
-    if (rootPosts.length === 0) {
-      postsContainer.innerHTML = '<p class="text-gray-400 text-sm">まだレスがありません。</p>';
-      return;
-    }
+    if (rootPosts.length === 0) { postsContainer.innerHTML = '<p class="text-sm" style="color:var(--brown-500);">まだレスがありません。</p>'; return; }
     const tree = document.createElement('div');
     tree.className = 'post-tree';
     rootPosts.forEach(p => tree.appendChild(buildPostNode(p, 0)));
@@ -2920,33 +1749,27 @@
     if (postRole === 'admin') roleBadge = '<span class="role-post-badge admin">管理者</span>';
     else if (postRole === 'owner') roleBadge = '<span class="role-post-badge owner">主</span>';
     else if (postRole === 'vip') roleBadge = '<span class="role-post-badge vip">VIP</span>';
-
     const showEmail = canViewEmail() && post.authorEmail;
-    const emailHtml = showEmail ? ` <span class="text-xs text-gray-500 font-mono">${escapeHtml(post.authorEmail)}</span>` : '';
-
+    const emailHtml = showEmail ? ` <span class="text-xs font-mono" style="color:var(--brown-600);">${escapeHtml(post.authorEmail)}</span>` : '';
     card.innerHTML = `
       <div class="flex justify-between items-start gap-2 flex-wrap">
         <div class="flex-1 min-w-0">
           <div class="text-sm">
             <span class="post-number">#${num}</span>
             <span class="post-author">${escapeHtml(post.authorEmail || '匿名')}</span>
-            ${emailHtml}
-            ${roleBadge}
-            ${isOwner ? '<span class="op-badge">作成者</span>' : ''}
+            ${emailHtml} ${roleBadge} ${isOwner ? '<span class="op-badge">作成者</span>' : ''}
           </div>
-          <div class="text-xs text-gray-400 mt-1">${date}</div>
+          <div class="text-xs mt-1" style="color:var(--brown-500);">${date}</div>
         </div>
       </div>
-      <div class="mt-2 text-sm text-gray-800 break-words whitespace-pre-wrap">${formatContent(post.content || '')}</div>
+      <div class="mt-2 text-sm break-words whitespace-pre-wrap" style="color:var(--brown-950);">${formatContent(post.content || '')}</div>
       ${post.file ? buildFileHtml(post.file) : ''}
       <div class="mt-2 flex gap-2 flex-wrap">
         <button class="reply-btn" data-reply-id="${post.key}">返信</button>
-        ${(canDelete() || (currentUser && post.authorUid === currentUser.uid)) ?
-          `<button class="delete-btn" data-del-id="${post.key}">削除</button>` : ''}
+        ${(canDelete() || (currentUser && post.authorUid === currentUser.uid)) ? `<button class="delete-btn" data-del-id="${post.key}">削除</button>` : ''}
       </div>
       <div class="reply-box-container"></div>
     `;
-
     card.querySelector('[data-reply-id]')?.addEventListener('click', () => {
       showInlineReply(card.querySelector('.reply-box-container'), post.key);
     });
@@ -2954,18 +1777,10 @@
       const btn = e.currentTarget;
       if (!confirm('このレスを削除しますか？')) return;
       btn.disabled = true;
-      try {
-        await remove(ref(db, `threads/${currentThreadKey}/posts/${post.key}`));
-        showBanner('レスを削除しました', false);
-      } catch (err) {
-        console.error('レス削除エラー:', err);
-        showBanner('削除失敗: ' + (err.code || err.message), true);
-        btn.disabled = false;
-      }
+      try { await remove(ref(db, `threads/${currentThreadKey}/posts/${post.key}`)); showBanner('レスを削除しました', false); }
+      catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); btn.disabled = false; }
     });
-
     wrap.appendChild(card);
-
     const children = allPostsCache.filter(p => p.parentId === post.key);
     if (children.length > 0) {
       const childWrap = document.createElement('div');
@@ -2978,10 +1793,7 @@
 
   function showInlineReply(container, parentId) {
     if (!container) return;
-    if (container.querySelector('.inline-reply-box')) {
-      container.innerHTML = '';
-      return;
-    }
+    if (container.querySelector('.inline-reply-box')) { container.innerHTML = ''; return; }
     const parentNum = postNumberMap.get(parentId) || '?';
     const box = document.createElement('div');
     box.className = 'inline-reply-box';
@@ -2991,8 +1803,7 @@
       <div class="flex gap-2 mt-2">
         <button class="reply-btn submit-reply">送信</button>
         <button class="reply-cancel-btn cancel-reply">キャンセル</button>
-      </div>
-    `;
+      </div>`;
     container.appendChild(box);
     box.querySelector('.cancel-reply').addEventListener('click', () => { container.innerHTML = ''; });
     box.querySelector('.submit-reply').addEventListener('click', async () => {
@@ -3006,11 +1817,8 @@
         const now = Date.now();
         const updates = {};
         updates[`threads/${currentThreadKey}/posts/${postRef.key}`] = {
-          content,
-          authorUid: currentUser.uid,
-          authorEmail: currentUser.email || '',
-          createdAt: now,
-          parentId: parentId
+          content, authorUid: currentUser.uid, authorEmail: currentUser.email || '',
+          createdAt: now, parentId
         };
         const thread = allThreadsCache.find(t => t.key === currentThreadKey);
         updates[`threads/${currentThreadKey}/lastActivityAt`] = now;
@@ -3034,8 +1842,7 @@
     const file = fileInput.files[0];
     if (!content && !file) { alert('内容または画像を入力してください。'); return; }
     const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = file ? '画像処理中...' : '送信中...';
+    btn.disabled = true; btn.textContent = file ? '画像処理中...' : '送信中...';
     try {
       let fileData = null;
       if (file) fileData = await fileToBase64Image(file);
@@ -3044,12 +1851,9 @@
       const thread = allThreadsCache.find(t => t.key === currentThreadKey);
       const updates = {};
       updates[`threads/${currentThreadKey}/posts/${postRef.key}`] = {
-        content: content || '',
-        file: fileData,
-        authorUid: currentUser.uid,
-        authorEmail: currentUser.email || '',
-        createdAt: now,
-        parentId: activeReplyParentId || null
+        content: content || '', file: fileData,
+        authorUid: currentUser.uid, authorEmail: currentUser.email || '',
+        createdAt: now, parentId: activeReplyParentId || null
       };
       updates[`threads/${currentThreadKey}/lastActivityAt`] = now;
       updates[`threads/${currentThreadKey}/postCount`] = (thread && thread.postCount || 0) + 1;
@@ -3061,28 +1865,17 @@
       console.error('投稿エラー:', err);
       showBanner('投稿失敗: ' + (err.code || err.message), true);
       alert('投稿に失敗しました。\n' + (err.message || ''));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '書き込む';
-    }
+    } finally { btn.disabled = false; btn.textContent = '書き込む'; }
   });
 
   window.deleteCurrentThread = async function() {
     if (!currentThreadKey) return;
     if (!confirm('このスレッドを削除しますか？（全レスも削除されます）')) return;
-    try {
-      await remove(ref(db, `threads/${currentThreadKey}`));
-      showBanner('スレッドを削除しました', false);
-      showThreadList();
-    } catch (err) {
-      console.error('スレッド削除エラー:', err);
-      showBanner('削除失敗: ' + (err.code || err.message), true);
-    }
+    try { await remove(ref(db, `threads/${currentThreadKey}`)); showBanner('スレッドを削除しました', false); showThreadList(); }
+    catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
   };
 
-  /* =========================================================
-     バッジ公開トグル / メール表示トグル
-     ========================================================= */
+  /* バッジ公開トグル */
   badgeToggle?.addEventListener('change', (e) => {
     myBadgePublic = e.target.checked;
     if (currentUser) saveBadgeVisibility(currentUser.email, myBadgePublic);
@@ -3093,16 +1886,12 @@
     if (currentThreadKey) renderPostsFromCache();
   });
 
-  /* =========================================================
-     公開設定モーダル（最低限のスタブ）
-     ========================================================= */
+  /* 公開設定モーダル */
   function updatePublishModalUI() {
     const label = document.getElementById('publishStatusLabel');
     if (label) label.textContent = siteStatusCache.published !== false ? '公開中' : '非公開（メンテナンス中）';
     const urlInput = document.getElementById('publishUrlInput');
-    if (urlInput && document.activeElement !== urlInput) {
-      urlInput.value = siteStatusCache.messageUrl || '';
-    }
+    if (urlInput && document.activeElement !== urlInput) urlInput.value = siteStatusCache.messageUrl || '';
   }
   window.openPublishModal = function() {
     if (!canPublish()) { alert('公開設定権限がありません。'); return; }
@@ -3114,31 +1903,22 @@
   });
   document.getElementById('publishSaveUrlBtn')?.addEventListener('click', async () => {
     const url = document.getElementById('publishUrlInput').value.trim();
-    try {
-      await update(ref(db, 'siteStatus'), { messageUrl: url });
-      showBanner('URLを保存しました', false);
-    } catch (err) {
-      showBanner('保存失敗: ' + (err.code || err.message), true);
-    }
+    try { await update(ref(db, 'siteStatus'), { messageUrl: url }); showBanner('URLを保存しました', false); }
+    catch (err) { showBanner('保存失敗: ' + (err.code || err.message), true); }
   });
   document.getElementById('publishToggleBtn')?.addEventListener('click', async () => {
     const isPublished = siteStatusCache.published !== false;
     try {
       await update(ref(db, 'siteStatus'), {
-        published: !isPublished,
-        updatedAt: Date.now(),
+        published: !isPublished, updatedAt: Date.now(),
         updatedBy: currentUser ? currentUser.email : 'system'
       });
       showBanner(!isPublished ? 'サイトを公開しました' : 'サイトを非公開にしました', false);
       document.getElementById('publishModal').classList.add('hidden');
-    } catch (err) {
-      showBanner('切替失敗: ' + (err.code || err.message), true);
-    }
+    } catch (err) { showBanner('切替失敗: ' + (err.code || err.message), true); }
   });
 
-  /* =========================================================
-     ユーザー一覧・承認待ち・ニックネーム・BAN管理（最小実装）
-     ========================================================= */
+  /* ユーザー一覧 */
   function renderUserList() {
     const container = document.getElementById('userListContainer');
     if (!container) return;
@@ -3149,17 +1929,13 @@
     entries.sort((a, b) => (b[1].lastSeen || 0) - (a[1].lastSeen || 0));
     entries = entries.filter(([uid, u]) => {
       if (!u) return false;
-      if (q && !(u.email || '').toLowerCase().includes(q) &&
-          !(nicknamesCache[uid] || '').toLowerCase().includes(q)) return false;
+      if (q && !(u.email || '').toLowerCase().includes(q) && !(nicknamesCache[uid] || '').toLowerCase().includes(q)) return false;
       if (onlyNotBanned && (bansCache[uid] || bansCache[emailToKey(u.email)])) return false;
       if (onlyNick && !nicknamesCache[uid]) return false;
       return true;
     });
     document.getElementById('userCountLabel').textContent = entries.length;
-    if (entries.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-xs">該当ユーザーなし</p>';
-      return;
-    }
+    if (entries.length === 0) { container.innerHTML = '<p class="text-xs" style="color:var(--brown-500);">該当ユーザーなし</p>'; return; }
     container.innerHTML = '';
     entries.forEach(([uid, u]) => {
       const row = document.createElement('div');
@@ -3178,8 +1954,7 @@
         <div class="action-btns">
           <button class="btn-mini btn-nickname" data-uid="${uid}">ニックネーム</button>
           <button class="btn-mini btn-copy" data-email="${escapeHtml(u.email || '')}">コピー</button>
-        </div>
-      `;
+        </div>`;
       row.querySelector('.btn-nickname').addEventListener('click', () => openNicknameModal(uid, u.email || ''));
       row.querySelector('.btn-copy').addEventListener('click', async () => {
         try { await navigator.clipboard.writeText(u.email || ''); showBanner('コピーしました', false); } catch (e) {}
@@ -3212,31 +1987,23 @@
     const uid = document.getElementById('nicknameModal').dataset.uid;
     const nick = document.getElementById('nicknameInput').value.trim();
     if (!nick) { alert('ニックネームを入力してください。'); return; }
-    try {
-      await set(ref(db, `nicknames/${uid}`), nick);
-      document.getElementById('nicknameModal').classList.add('hidden');
-      showBanner('ニックネームを保存しました', false);
-    } catch (err) { showBanner('保存失敗: ' + (err.code || err.message), true); }
+    try { await set(ref(db, `nicknames/${uid}`), nick); document.getElementById('nicknameModal').classList.add('hidden'); showBanner('ニックネームを保存しました', false); }
+    catch (err) { showBanner('保存失敗: ' + (err.code || err.message), true); }
   });
   document.getElementById('nicknameDeleteBtn')?.addEventListener('click', async () => {
     const uid = document.getElementById('nicknameModal').dataset.uid;
     if (!confirm('ニックネームを削除しますか？')) return;
-    try {
-      await remove(ref(db, `nicknames/${uid}`));
-      document.getElementById('nicknameModal').classList.add('hidden');
-      showBanner('ニックネームを削除しました', false);
-    } catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
+    try { await remove(ref(db, `nicknames/${uid}`)); document.getElementById('nicknameModal').classList.add('hidden'); showBanner('ニックネームを削除しました', false); }
+    catch (err) { showBanner('削除失敗: ' + (err.code || err.message), true); }
   });
 
+  /* 承認待ち */
   function renderPendingList() {
     const container = document.getElementById('pendingListContainer');
     if (!container) return;
     const entries = Object.entries(pendingCache || {});
     document.getElementById('pendingCountLabel').textContent = entries.length;
-    if (entries.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-xs">承認待ちはありません。</p>';
-      return;
-    }
+    if (entries.length === 0) { container.innerHTML = '<p class="text-xs" style="color:var(--brown-500);">承認待ちはありません。</p>'; return; }
     container.innerHTML = '';
     entries.sort((a, b) => (a[1].requestedAt || 0) - (b[1].requestedAt || 0));
     entries.forEach(([uid, p]) => {
@@ -3248,8 +2015,7 @@
           <div class="meta-line">申請: ${p.requestedAt ? new Date(p.requestedAt).toLocaleString('ja-JP') : '-'}</div>
         </div>
         <button class="approve-btn" data-uid="${uid}">承認</button>
-        <button class="reject-btn" data-uid="${uid}">拒否</button>
-      `;
+        <button class="reject-btn" data-uid="${uid}">拒否</button>`;
       row.querySelector('.approve-btn').addEventListener('click', async () => {
         try {
           await update(ref(db), {
@@ -3261,10 +2027,8 @@
       });
       row.querySelector('.reject-btn').addEventListener('click', async () => {
         if (!confirm('このユーザーの申請を拒否しますか？')) return;
-        try {
-          await remove(ref(db, `pendingUsers/${uid}`));
-          showBanner('拒否しました', false);
-        } catch (err) { showBanner('拒否失敗: ' + (err.code || err.message), true); }
+        try { await remove(ref(db, `pendingUsers/${uid}`)); showBanner('拒否しました', false); }
+        catch (err) { showBanner('拒否失敗: ' + (err.code || err.message), true); }
       });
       container.appendChild(row);
     });
@@ -3278,14 +2042,12 @@
     document.getElementById('pendingModal').classList.add('hidden');
   });
 
+  /* BAN */
   function renderBanList() {
     const container = document.getElementById('banListContainer');
     if (!container) return;
     const entries = Object.entries(bansCache || {});
-    if (entries.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-xs">BANされたユーザーはいません。</p>';
-      return;
-    }
+    if (entries.length === 0) { container.innerHTML = '<p class="text-xs" style="color:var(--brown-500);">BANされたユーザーはいません。</p>'; return; }
     container.innerHTML = '';
     entries.forEach(([key, b]) => {
       const row = document.createElement('div');
@@ -3295,14 +2057,11 @@
           <div class="email-line">${escapeHtml(b.email || key)}</div>
           <div class="meta-line">${b.reason ? '理由: ' + escapeHtml(b.reason) : ''} ${b.bannedAt ? ' / ' + new Date(b.bannedAt).toLocaleString('ja-JP') : ''}</div>
         </div>
-        <button class="unban-btn" data-key="${key}">解除</button>
-      `;
+        <button class="unban-btn" data-key="${key}">解除</button>`;
       row.querySelector('.unban-btn').addEventListener('click', async () => {
         if (!confirm('BANを解除しますか？')) return;
-        try {
-          await remove(ref(db, `bans/${key}`));
-          showBanner('BANを解除しました', false);
-        } catch (err) { showBanner('解除失敗: ' + (err.code || err.message), true); }
+        try { await remove(ref(db, `bans/${key}`)); showBanner('BANを解除しました', false); }
+        catch (err) { showBanner('解除失敗: ' + (err.code || err.message), true); }
       });
       container.appendChild(row);
     });
@@ -3318,24 +2077,18 @@
   document.getElementById('banAddBtn')?.addEventListener('click', async () => {
     const email = document.getElementById('banEmailInput').value.trim();
     const reason = document.getElementById('banReasonInput').value.trim();
-    const withDevice = document.getElementById('banDeviceCheck').checked;
     if (!email) { alert('メールアドレスを入力してください。'); return; }
     try {
       const ek = emailToKey(email);
-      const now = Date.now();
-      const data = { email, reason, bannedAt: now, bannedBy: currentUser.email };
+      const data = { email, reason, bannedAt: Date.now(), bannedBy: currentUser.email };
       const updates = {};
       updates[`bans/${ek}`] = data;
       await update(ref(db), updates);
       showBanner('BANしました', false);
-    } catch (err) {
-      showBanner('BAN失敗: ' + (err.code || err.message), true);
-    }
+    } catch (err) { showBanner('BAN失敗: ' + (err.code || err.message), true); }
   });
 
-  /* =========================================================
-     バッジ管理モーダル（簡易）
-     ========================================================= */
+  /* バッジ管理 */
   document.getElementById('badgeCloseBtn')?.addEventListener('click', () => {
     document.getElementById('badgeModal').classList.add('hidden');
   });
@@ -3346,7 +2099,7 @@
     document.getElementById('badgeEditor').classList.add('hidden');
   });
 
-  console.log('✅ 掲示板アプリ初期化完了（Discord Webhook削除済み）');
+  console.log('✅ 掲示板アプリ初期化完了（茶色テーマ・Discord Webhook削除済み）');
 </script>
 </body>
 </html>
